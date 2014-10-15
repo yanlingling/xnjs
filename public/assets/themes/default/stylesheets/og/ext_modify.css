@@ -1,0 +1,194 @@
+/*--- fix width of date pickers in IE8 ---*/
+.x-date-menu {
+	width: 175px !important;
+}
+
+/*--- layout.css ---*/
+.x-layout-collapsed{
+    border:0px;
+}
+
+/*--- panel.css ---*/
+#tabs-panel .x-panel-body-noheader, .x-panel-mc .x-panel-body {
+    border-top:0px;
+}
+.x-panel-body{
+	/*background-color: #F0F0F0;	*/
+}
+
+/*--- tabs.css ---*/
+.x-tab-strip .x-tab-with-icon span.x-tab-strip-text {
+    color: white;
+    font-size: 11pt;
+    height: 16px;
+}
+
+.x-tab-panel-header, .x-tab-panel-footer {
+	border: 0px;
+}
+.x-tab-panel-header {
+	border: 0px;
+	padding-bottom: 0px;
+}
+.x-tab-panel-body {
+    border: 0px;
+}
+
+strong{font-weight:bold;}
+
+
+.og-content-panel .x-toolbar {
+	background: #F0F0F0;
+	border-top: 0px none;
+	padding-top:5px;
+}
+
+.og-content-panel .x-tree .x-panel-tbar .x-toolbar {
+	border-top: 1px solid #99BBE8;
+}
+
+
+.og-content-panel .x-panel-bbar .x-toolbar {
+	background: transparent;
+	border-top: 0px none;
+}
+
+.x-tbar-page-number{
+	padding-left:3px;
+	padding-top:1px;
+	padding-bottom:1px;
+	height:15px;
+}
+
+/* Sets the width of a checkbox to 16 in a checkbox tree*/
+input.x-tree-node-cb {
+	width:16px;
+	margin-top:1px;
+}
+.ico-none {
+	background-image: url(../../images/s.gif) !important;
+	width:1px;
+	height:1px;
+}
+
+.ext-safari .x-form-field-wrap .x-form-trigger {
+	right: auto;
+}
+
+.x-form-field-wrap {
+	width: auto !important;
+	padding-right: 17px;
+}
+
+.x-resizable-over .x-resizable-handle, .x-resizable-pinned .x-resizable-handle {
+	opacity:0.5;
+	filter: alpha(opacity = 50);
+}
+.ico-overview {
+    background: transparent url(../../images/16x16/all_16_16_sprite.png) no-repeat scroll 0 -2524px !important;
+}
+.ico-tasks-layout {
+    background: transparent url(../../images/16x16/all_16_16_sprite.png) no-repeat scroll 0 -3535px !important;
+}
+.x-form-field-wrap .x-form-trigger{
+    top: 5px;
+}
+ul.x-tab-strip li {
+    height: 29px;
+    width: 143px;
+    float: left;
+    margin-left: 2px;
+    background: transparent url(../../images/bg.png?r=2) no-repeat -242px -30px !important;
+}
+.x-tab-strip-top .x-tab-right {
+    background: transparent;
+    padding-left: 10px;
+}
+.x-tab-strip-top .x-tab-left {
+    background: transparent ;
+    padding-right: 10px;
+}
+.x-tab-strip-top .x-tab-strip-inner {
+    background: transparent;
+}
+ul.x-tab-strip   .x-tab-strip-active {
+    color: #333;
+    font-weight: 700;
+    cursor: pointer !important;
+    background: transparent url(../../images/bg.png?r=3) no-repeat -241px 0px !important;
+}
+
+.x-tab-strip .x-tab-strip-active .x-tab-strip-inner span.x-tab-strip-text {
+    color: #333;
+    font-weight: 700;
+}
+.x-border-layout-ct {
+    background: #2374ad;
+}
+
+ul.x-tab-strip-top {
+    padding-top: 1px;
+    background: #2374ad;
+}
+.x-tab-panel-header, .x-tab-panel-footer {
+    background: transparent;
+    overflow: hidden;
+    zoom: 1;
+}
+ul.x-tab-strip-top {
+    border-bottom: 0px solid #8db2e3;
+}
+.x-date-bottom{
+    font-size: 12px;
+}
+
+.x-form-spinner-proxy{
+    /*background-color:#ff00cc;*/
+}
+.x-form-field-wrap .x-form-spinner-trigger {
+    background:transparent url('../images/spinner.gif') no-repeat 0 0;
+}
+
+.x-form-field-wrap .x-form-spinner-overup{
+    background-position:-17px 0;
+}
+.x-form-field-wrap .x-form-spinner-clickup{
+    background-position:-34px 0;
+}
+.x-form-field-wrap .x-form-spinner-overdown{
+    background-position:-51px 0;
+}
+.x-form-field-wrap .x-form-spinner-clickdown{
+    background-position:-68px 0;
+}
+
+
+.x-trigger-wrap-focus .x-form-spinner-trigger{
+    background-position:-85px 0;
+}
+.x-trigger-wrap-focus .x-form-spinner-overup{
+    background-position:-102px 0;
+}
+.x-trigger-wrap-focus .x-form-spinner-clickup{
+    background-position:-119px 0;
+}
+.x-trigger-wrap-focus .x-form-spinner-overdown{
+    background-position:-136px 0;
+}
+.x-trigger-wrap-focus .x-form-spinner-clickdown{
+    background-position:-153px 0;
+}
+.x-trigger-wrap-focus .x-form-trigger{
+    border-bottom: 1px solid #7eadd9;
+}
+
+.x-form-field-wrap .x-form-spinner-splitter {
+    line-height:1px;
+    font-size:1px;
+    background:transparent url('../images/spinner-split.gif') no-repeat 0 0;
+    position:absolute;
+    cursor: n-resize;
+}
+.x-trigger-wrap-focus .x-form-spinner-splitter{
+    background-position:-14px 0;
+}
