@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_javascript('og/jquery.min.js');
 require_javascript('og/cookie.js');
 require_javascript("og/CSVCombo.js");
@@ -319,7 +319,11 @@ function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $su
                     // 过期的任务不能再申请延期
                     if (strtotime($dueDate) > time()) {
                         $str .= "&nbsp;&nbsp;<a onclick='og.taskList.drawDelayApply($taskId)'>申请延期</a>";
+						if($userRole == '科长'){
+							$str .= "&nbsp;&nbsp;<a onclick='og.taskList.deliverClick($taskId)'>转交</a>";
+						}
                     }
+					
                 }
 
             }
@@ -378,6 +382,9 @@ function getTaskLightStatus($status)
     switch ($status) {
         case 1:
             $str = '<span class="ico-task-light-green" title="已完成"></span>';
+			break;
+		case 5:
+            $str = '<span title="已完成">已转交</span>';
             break;
         case 2:
             $str = '<span class="ico-task-light-gray" title="进行中"></span>';

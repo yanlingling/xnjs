@@ -106,7 +106,7 @@ AND x.depart_id = y.depart_id ";
             x.advanced_supervise,x.advanced_supervise_feedback,
             x.assigned_to_departid,
             x.complete_detail,x.completed_on,
-            x.created_on
+            x.created_on,x.reason_deliver
             FROM og_project_tasks AS x, og_users AS z, og_department AS y
             WHERE x.assigned_to_departid = y.depart_id
             AND x.assigned_to_departid  = $depart_id
@@ -321,7 +321,59 @@ AND x.depart_id = y.depart_id ";
         DB::commit();
         ajx_current("empty");
     }
-
+	/**
+	 * 处理任务转交
+	 */
+	 function task_deliver(){
+		if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        ajx_current("empty");
+        $taskId = $_POST['taskId'];
+        $reason = $_POST['reason'];
+        $hopeDay = $_POST['hopeDay'];
+        $departId = $_POST['departId'];
+        $now = date('Y-m-d H:i:s', time());
+        $project = $_GET['active_project'];
+		$dueDate = date('Y-m-d H:i:s',strtotime("$now +7 day"));
+		DB::beginWork();
+		
+		$sql = "SELECT * FROM og_project_tasks WHERE id=".$taskId;
+        $rows = DB::executeAll($sql);
+		
+		$sql = "INSERT INTO"
+		." `og_project_tasks`(`advanced_supervise_feedback`, `supervise_feedback`, `advanced_supervise`, `supervise_status`,"
+		." `assigned_to_departid`, `parent_id`, `title`, `text`, `due_date`, `start_date`, `assigned_to_company_id`,"
+		." `assigned_to_user_id`, `assigned_on`, `assigned_by_id`, `time_estimate`, `completed_on`, `complete_detail`,"
+		." `completed_by_id`, `created_on`, `created_by_id`, `updated_on`, `updated_by_id`, `trashed_on`, `trashed_by_id`,"
+		." `archived_on`, `archived_by_id`, `started_on`, `started_by_id`, `priority`, `state`, `order`, `milestone_id`,"
+		." `is_private`, `is_template`, `from_template_id`, `repeat_end`, `repeat_forever`, `repeat_num`, `repeat_d`, `repeat_m`,"
+		." `repeat_y`, `repeat_by`, `object_subtype`, `assigned_to_project_id`, `light_status`, `deleted`,`reason_deliver`) "
+		."VALUES ('".$rows[0]['advanced_supervise_feedback']."','".$rows[0]['supervise_feedback']."','0',"
+		."'0','".$departId."','".$rows[0]['parent_id']."','".$rows[0]['title']."',"
+		."'".$rows[0]['text']."','".$dueDate."','".$rows[0]['start_date']."','".$rows[0]['assigned_to_company_id']."','".$rows[0]['assigned_to_user_id']."',"
+		."'".$rows[0]['assigned_on']."','".$rows[0]['assigned_by_id']."','".$rows[0]['time_estimate']."','".$rows[0]['completed_on']."',"
+		."'".$rows[0]['complete_detail']."','".$rows[0]['completed_by_id']."','".$rows[0]['created_on']."','".$rows[0]['created_by_id']."','".$rows[0]['updated_on']."',"
+		."'".$rows[0]['updated_by_id']."','".$rows[0]['trashed_on']."','".$rows[0]['trashed_by_id']."','".$rows[0]['archived_on']."','".$rows[0]['archived_by_id']."',"
+		."'".$rows[0]['started_on']."','".$rows[0]['started_by_id']."','".$rows[0]['priority']."','".$rows[0]['state']."',"
+		."'".$rows[0]['order']."','".$rows[0]['milestone_id']."','".$rows[0]['is_private']."','".$rows[0]['is_template']."','".$rows[0]['from_template_id']."',"
+		."'".$rows[0]['repeat_end']."','".$rows[0]['repeat_forever']."','".$rows[0]['repeat_num']."','".$rows[0]['repeat_d']."','".$rows[0]['repeat_m']."',"
+		."'".$rows[0]['repeat_y']."','".$rows[0]['repeat_by']."','".$rows[0]['object_subtype']."','".$rows[0]['assigned_to_project_id']."',"
+		."'".$rows[0]['light_status']."','".$rows[0]['deleted']."','".$reason."')";
+		
+        DB::execute($sql);
+		
+		
+		//更新状态
+        $sql = "UPDATE `og_project_tasks` SET `light_status`=5 WHERE id=".$taskId;
+        DB::execute($sql);
+		
+        DB::commit();
+        ajx_current("empty");
+	 }
+	 
     /**
      * 处理任务延期的申请
      */
