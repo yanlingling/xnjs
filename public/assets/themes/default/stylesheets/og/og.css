@@ -1933,3 +1933,9 @@ select.select_milestone, select.select_task_list, select.select_message {
     position: relative;
     top: -4px;
 }
+.sub-tab span {
+    margin-right: 10px;
+}
+.form-horizontal textarea{
+    height: 80px;
+}

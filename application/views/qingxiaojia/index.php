@@ -16,14 +16,12 @@ $genid = gen_id();
             <div
                 class="<?php echo ($userRole == '局长' || $userRole == '副局长' || $userRole == '科长') ? 'inline' : 'hide'; ?>">
 
-                &nbsp;| &nbsp;
              <span id='to-handle-tab'>
              待处理申请
             </span>
             </div>
             <div  class="<?php echo $canViewAllHolidayApply ? 'inline' : 'hide'; ?>">
 
-                &nbsp;| &nbsp;
              <span id='all-holiday-tab'>
              所有申请
             </span>
@@ -31,7 +29,6 @@ $genid = gen_id();
             </div>
             <div  class="<?php echo $canViewAllHolidayApply ? 'inline' : 'hide'; ?>">
 
-                &nbsp;| &nbsp;
              <span id='tongji-holiday-tab'>
                  数据统计
             </span>

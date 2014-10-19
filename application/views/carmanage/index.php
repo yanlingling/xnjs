@@ -41,19 +41,16 @@ $genid = gen_id();
             <div
                 class="<?php echo ($canManageCar) ? 'inline' : 'hide'; ?>">
 
-                &nbsp;| &nbsp;
              <span id='to-handle-tab'>
              待处理申请
             </span>
             </div>
             <div  class="<?php echo $canManageCar || $userRole=='局长'? 'inline' : 'hide'; ?>">
 
-                &nbsp;| &nbsp;
              <span id='all-apply-tab'>
              所有申请
             </span>
 
-                &nbsp;| &nbsp;
              <span id='car-data-tab'>
              用车统计
             </span>

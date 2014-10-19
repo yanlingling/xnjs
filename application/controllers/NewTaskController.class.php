@@ -87,6 +87,35 @@ AND x.depart_id = y.depart_id ";
             tpl_assign('supervise_task_list', $rows);
         }
 
+        // 查询待评价岗位职责
+        if ($depart_name == '效能办' || logged_user()->getUserRole() == '局长'
+            || logged_user()->getUserRole() == '副局长'
+        ) {
+            $sql = "SELECT x.id, x.title,x.text,z.username,x.due_date,x.light_status,x.supervise_status,
+            x.advanced_supervise,x.assigned_to_departid,x.completed_on
+            FROM " . TABLE_PREFIX . "project_tasks AS x, " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
+            WHERE x.deleted = !1
+            and x.light_status=1";
+            if ($depart_name == '效能办') {
+                $sql .= " and comment_xiaoneng=''";
+            } else if($depart_name == '副局长') {
+                $sql .= " and comment_fujuzhang=''
+                and x.`assigned_to_departid` = y.depart_id
+                 and FIND_IN_SET(z.id, y.fujuzhang_id) !=0
+                 and z.id=" . logged_user()->getId();
+            }  else if($depart_name == '局长') {
+                $sql .= " and comment_juzhang=''";
+            }
+            $sql .= "order by x.completed_on DESC";
+            DB::beginWork();
+            //$rows = DB::executeAll($sql);
+            DB::commit();
+            tpl_assign('comment_task_list', $rows);
+            //tpl_assign('comment_task_list',  array());
+            tpl_assign('has_comment_auth', true);
+        }
+
+
         //科室列表
         $sql = "SELECT depart_id,depart_name FROM " . TABLE_PREFIX . "department";
         $rows = DB::executeAll($sql);
@@ -134,6 +163,8 @@ AND x.depart_id = y.depart_id ";
         $rows = DB::executeAll($sql);
         DB::commit();
         tpl_assign('apply_list', $rows);
+
+
         $tab = 'task';
         if (isset($_GET['tab'])) {
             $tab = $_GET['tab'];
@@ -231,7 +262,10 @@ AND x.depart_id = y.depart_id ";
             x.advanced_supervise,x.advanced_supervise_feedback,
             x.assigned_to_departid,
             x.complete_detail,x.completed_on,
-            x.created_on,x.reason_deliver,x.deliver_to_departid,x.deliver_from_departid
+            x.created_on,x.reason_deliver,x.deliver_to_departid,x.deliver_from_departid,
+            x.comment_juzhang,
+            x.comment_fujuzhang,
+            x.comment_xiaoneng
             FROM og_project_tasks AS x, og_users AS z, og_department AS y
             WHERE x.assigned_to_departid = y.depart_id
             AND z.id  = y.manager_id
@@ -371,8 +405,7 @@ AND x.depart_id = y.depart_id ";
     /**
      * 处理任务转交
      */
-    function task_deliver()
-    {
+    function task_deliver() {
         if (logged_user()->isGuest()) {
             flash_error(lang('no access permissions'));
             ajx_current("empty");
@@ -405,7 +438,7 @@ AND x.depart_id = y.depart_id ";
            `created_on`, `created_by_id`,`light_status`,`reason_deliver`,
            `deliver_from_taskid`,`deliver_from_departid`) VALUES (
            '0', '" . $departId . "','" . $data['title'] . "','" . $data['detail'] . "','" . date("Y-m-d H:i:s", strtotime("$due_date +7   day")) . "',
-           now(),'" . logged_user()->getId() . "',2,'" . $reason . "'," . $data['id'] . ",".$from_depart_id.")";
+           now(),'" . logged_user()->getId() . "',2,'" . $reason . "'," . $data['id'] . "," . $from_depart_id . ")";
 
         DB::execute($sql);
 
@@ -413,6 +446,32 @@ AND x.depart_id = y.depart_id ";
         $sql = "UPDATE `og_project_tasks` SET `light_status`=5,`deliver_to_departid`=" . $departId . " WHERE id=" . $taskId;
         DB::execute($sql);
 
+        DB::commit();
+        ajx_current("empty");
+    }
+
+    function task_comment() {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        ajx_current("empty");
+        $taskId = $_POST['taskId'];
+        $comment = $_POST['comment'];
+        $role = logged_user()->getUserRole();
+        DB::beginWork();
+        if ($role == '局长') {
+            //更新状态
+            $sql = "UPDATE `og_project_tasks` SET `comment_juzhang`=''" . $comment. "' WHERE id=" . $taskId;
+        } else if ($role == '副局长') {
+            //更新状态
+            $sql = "UPDATE `og_project_tasks` SET `comment_fujuzhang`='" . $comment. "' WHERE id=" . $taskId;
+        }else  {
+            //更新状态
+            $sql = "UPDATE `og_project_tasks` SET `comment_xiaoneng`='" . $comment. "' WHERE id=" . $taskId;
+        }
+        DB::execute($sql);
         DB::commit();
         ajx_current("empty");
     }

@@ -44,14 +44,6 @@ $item = $taskDetail;
     if ($item['light_status'] == 1) {
         ?>
         <div class="form-group">
-            <label class="col-sm-2 control-label">完成情况描述:</label>
-            <div class="col-sm-10">
-                <textarea class="form-control-static" readonly="readonly">
-                    <?php echo $item['complete_detail'];?>
-                </textarea>
-            </div>
-        </div>
-        <div class="form-group">
             <label class="col-sm-2 control-label">完成时间:</label>
             <div class="col-sm-3">
                 <p class="form-control-static">
@@ -63,6 +55,38 @@ $item = $taskDetail;
                 <p class="form-control-static" >
                     <?php echo transTaskSupervise($item['supervise_status']);?>
                 </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">完成情况描述:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control-static" readonly="readonly">
+                    <?php echo $item['complete_detail'];?>
+                </textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">局长评价:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control-static" readonly="readonly">
+                    <?php echo $item['comment_juzhang'];?>
+                </textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">副局长评价:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control-static" readonly="readonly">
+                    <?php echo $item['comment_fujuzhang'];?>
+                </textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">效能办评价:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control-static" readonly="readonly">
+                    <?php echo $item['comment_xiaoneng'];?>
+                </textarea>
             </div>
         </div>
     <?php

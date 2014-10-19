@@ -34,7 +34,6 @@ $genid = gen_id();
 
                 <div class="<?php echo $canCreateReport==1? 'inline' : 'hide'; ?>">
 
-                    &nbsp;| &nbsp;
              <span id='all-report-tab'>
                  所有简报
             </span>
