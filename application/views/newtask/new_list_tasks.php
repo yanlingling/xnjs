@@ -1,4 +1,5 @@
 ﻿<?php
+require_javascript('og/bootstrap.min.js');
 require_javascript('og/jquery.min.js');
 require_javascript('og/cookie.js');
 require_javascript("og/CSVCombo.js");
@@ -137,55 +138,57 @@ foreach ($departInfo as $item) {
     <td class='d5'><?php echo getSuperviseStatus($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d6'><?php echo getSuperviseResult($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d7'><?php echo getTaskOptContent($item['light_status'], $item['id'], $raw_time,
-            $logged_user_depart, $isSelf, $item['supervise_status'], $item['advanced_supervise'], $item['assigned_to_departid']) ?></td>
+            $logged_user_depart, $isSelf, $item['supervise_status'], $item['advanced_supervise'],
+            $item['assigned_to_departid'],$item['text']) ?></td>
     </tr></table></div>
 <!--查看岗位职责出现的-->
-<div id="task-more-detail<?php echo $item['id'] ?>" class="ogAppendBox hide">
-    <table width="100%" style="text-align: left" class="task-detail">
-        <tr>
-            <td>岗位职责：<?php echo $item['title'] ?></td>
-            <td>责任人：<?php echo $item['username'] ?></td>
-        </tr>
-        <tr>
-            <td colspan="2">目标任务：</td>
 
-        </tr>
-        <tr>
-            <td colspan="2">
-                <textarea readonly="readonly"><?php echo $item['text'] ?></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>当前状态：<?php echo transTaskStatus($item['light_status']) ?></td>
-            <td>到期时间：<?php echo $item['due_date'] ?></td>
-        </tr>
-        <?php
-        if ($item['light_status'] == 1) {
-            echo "<tr><td colspan='2'>完成情况描述：</td></tr>";
-            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['complete_detail'] . "</textarea></td></tr>";
-            $j = explode(" ", $item['completed_on']);
-            $item['completed_on'] = $j[0];
-            echo "<tr><td>完成时间：" . $item['completed_on'] . "</td><td>督察情况:" . transTaskSupervise($item['supervise_status']) . "</td></tr>";
-        }
-        if ($item['supervise_status'] == 3 || $item['supervise_status'] == 2) {
-            echo "<tr><td colspan='2'>随机督察意见：</td></tr>";
-            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['supervise_feedback'] . "</textarea></td></tr>";
-        }
-        if ($item['advanced_supervise'] == 3 || $item['advanced_supervise'] == 2) {
-            echo "<tr><td colspan='2'>主动督察意见：</td></tr>";
-            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['advanced_supervise_feedback'] . "</textarea></td></tr>";
-        }
-
-        ?>
-
-        <tr>
-            <td colspan="2">
-                <span class="small-button"
-                      onclick="og.taskList.viewTaskDetailCancelClick(<?php echo $item['id'] ?>)">取消</span>
-            </td>
-        </tr>
-    </table>
+<!-- 转交任务Modal -->
+<div class="modal" id="transTaskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">任务转交</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label >执法任务：</label>
+                        <label id="trans-task-name"></label>
+                    </div>
+                    <div class="form-group">
+                        <label >转交理由：</label>
+                        <textarea id="trans-reason" class="form-control" ></textarea>
+                        <input type="hidden" id="transout-task-id" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>科室</label>
+                        <select class="form-control" id="trans-depart" >
+                            <option value="">请选择科室</option>
+                            <?php
+                            foreach ($depart_list as $item) {
+                                echo '<option value="'.$item['depart_id'].'">'.$item['depart_name'].'</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group" >
+                        <div class="col-sm-4">
+                            <span class="bg-danger" id="tans-error"> </span>
+                            <span class="bg-success" id="tans-info">   </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="trans-task-confirm" onclick="og.taskList.tansTaskOK()">转交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <?php
 }
@@ -196,32 +199,7 @@ if ($i == 0) {
 }
 ?>
 <?php
-function transTaskSupervise($status)
-{
-    switch ($status) {
-        case 0:
-            return '不需要督察';
-        case 1:
-            return '督察中';
-        case 2:
-            return '督察通过';
-        case 3:
-            return '督察未通过';
-    }
-}
 
-function transTaskStatus($status)
-{
-    switch ($status) {
-        case 1:
-            return '已完成';
-        case 2:
-            return '进行中';
-        case 3:
-        case 4:
-            return '已超期';
-    }
-}
 
 function getSuperviseStatus($status, $advanced_supervise)
 {
@@ -279,7 +257,7 @@ function hasDeleteAuth($departName)
     }
 }
 
-function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $superviseStatus, $advSupervise, $depart_id)
+function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $superviseStatus, $advSupervise, $depart_id,$taskName)
 {
     $userRole = logged_user()->getUserRole();
     $str = "<a onclick='og.taskList.viewTaskDetailClick($taskId)'>查看</a>";
@@ -320,7 +298,7 @@ function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $su
                     if (strtotime($dueDate) > time()) {
                         $str .= "&nbsp;&nbsp;<a onclick='og.taskList.drawDelayApply($taskId)'>申请延期</a>";
 						if($userRole == '科长'){
-							$str .= "&nbsp;&nbsp;<a onclick='og.taskList.deliverClick($taskId)'>转交</a>";
+							$str .= "&nbsp;&nbsp;<a onclick=og.taskList.deliverClick($taskId,'$taskName')>转交</a>";
 						}
                     }
 					
@@ -384,7 +362,7 @@ function getTaskLightStatus($status)
             $str = '<span class="ico-task-light-green" title="已完成"></span>';
 			break;
 		case 5:
-            $str = '<span title="已完成">已转交</span>';
+            $str = '<span title="已转交">已转交</span>';
             break;
         case 2:
             $str = '<span class="ico-task-light-gray" title="进行中"></span>';

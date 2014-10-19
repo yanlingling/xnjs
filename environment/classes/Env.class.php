@@ -10,6 +10,7 @@ class Env {
 	 * @return boolean
 	 */
 	static function isDebugging() {
+        return true;
 		return defined('DEBUG') && DEBUG;
 	} // isDebugging
 	

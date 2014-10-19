@@ -4,6 +4,8 @@
 <head>
 <?php echo meta_tag('content-type', 'text/html; charset=utf-8', true) ?>
 <title><?php echo get_page_title() ?></title>
+    <link href="../../library/dep/bootstrap-3.2.0.min.css"
+                                                       rel="stylesheet">
 </head>
 <body>
 

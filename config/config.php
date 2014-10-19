@@ -11,9 +11,9 @@
 
   define('ROOT_URL',$url. '/fengoffice');
   define('DEFAULT_LOCALIZATION', 'en_us'); 
-  define('COOKIE_PATH', '/'); 
+  define('COOKIE_PATH', '/');
   define('DEBUG', false);
-  define('SEED', 'a070692dceabf26c15e263d74d0acf52'); 
+  define('SEED', 'a070692dceabf26c15e263d74d0acf52');
   define('DB_CHARSET', 'utf8'); 
   return true;
 ?>

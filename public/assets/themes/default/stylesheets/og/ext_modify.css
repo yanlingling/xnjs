@@ -109,6 +109,7 @@ ul.x-tab-strip li {
     padding-right: 10px;
 }
 .x-tab-strip-top .x-tab-strip-inner {
+    padding: 4px;
     background: transparent;
 }
 ul.x-tab-strip   .x-tab-strip-active {
@@ -136,6 +137,7 @@ ul.x-tab-strip-top {
     zoom: 1;
 }
 ul.x-tab-strip-top {
+    margin-bottom: 0px;
     border-bottom: 0px solid #8db2e3;
 }
 .x-date-bottom{

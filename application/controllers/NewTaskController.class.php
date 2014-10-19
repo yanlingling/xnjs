@@ -57,21 +57,21 @@ class NewtaskController extends ApplicationController
         $depart_name = $rows1[0]['depart_name'];
         $manager_id = $rows1[0]['manager_id'];
         $isSelf = 'other';
-/*        echo $manager_id;
-        echo '---';
-        echo logged_user()->getId();*/
-        if($manager_id == logged_user()->getId()){
+        /*        echo $manager_id;
+                echo '---';
+                echo logged_user()->getId();*/
+        if ($manager_id == logged_user()->getId()) {
             $isSelf = 'self';
         }
-     //   echo $isSelf;
+        //   echo $isSelf;
         tpl_assign('isSelf', $isSelf);
         // 查询当前登录用户的科室
         $sql = "SELECT depart_name
 FROM  `og_users` AS x, og_department AS y
-WHERE  `id` =".logged_user()->getId()."
+WHERE  `id` =" . logged_user()->getId() . "
 AND x.depart_id = y.depart_id ";
         $rows1 = DB::executeAll($sql);
-        tpl_assign('logged_user_depart',$rows1[0]['depart_name']);
+        tpl_assign('logged_user_depart', $rows1[0]['depart_name']);
         // 查询督察岗位职责
         if ($depart_name == '效能办') {
             $sql = "SELECT x.id, x.title,x.text,z.username,x.due_date,x.light_status,x.supervise_status,
@@ -86,6 +86,11 @@ AND x.depart_id = y.depart_id ";
             DB::commit();
             tpl_assign('supervise_task_list', $rows);
         }
+
+        //科室列表
+        $sql = "SELECT depart_id,depart_name FROM " . TABLE_PREFIX . "department";
+        $rows = DB::executeAll($sql);
+        tpl_assign('depart_list', $rows);
 
         // 查询岗位职责状态的汇总情况
         DB::beginWork();
@@ -164,8 +169,8 @@ AND x.depart_id = y.depart_id ";
             $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
                 FROM " . TABLE_PREFIX . "project_tasks AS x, " . TABLE_PREFIX . "department AS y, " . TABLE_PREFIX . "users AS z
                 WHERE x.`assigned_to_departid` = y.depart_id "
-                  ."and  FIND_IN_SET(z.id, y.fujuzhang_id) !=0 and x.deleted=0
-                and z.id=".logged_user()->getId()."
+                . "and  FIND_IN_SET(z.id, y.fujuzhang_id) !=0 and x.deleted=0
+                and z.id=" . logged_user()->getId() . "
                 GROUP BY x.`assigned_to_departid`";
         }
         $rows = DB::executeAll($sql);
@@ -206,6 +211,46 @@ AND x.depart_id = y.depart_id ";
             return 3;
         }
 
+    }
+
+    function detail_task()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+
+        DB::beginWork();
+        $id = $_POST['taskId'];
+        DB::beginWork();
+
+
+        $sql = "SELECT x.id, x.title,x.text,z.username,x.due_date,x.light_status,
+            x.supervise_status,x.supervise_feedback,
+            x.advanced_supervise,x.advanced_supervise_feedback,
+            x.assigned_to_departid,
+            x.complete_detail,x.completed_on,
+            x.created_on,x.reason_deliver,x.deliver_to_departid,x.deliver_from_departid
+            FROM og_project_tasks AS x, og_users AS z, og_department AS y
+            WHERE x.assigned_to_departid = y.depart_id
+            AND z.id  = y.manager_id
+            AND x.id= " . $id;
+        $rows = DB::executeAll($sql);
+        DB::commit();
+        if ($rows[0]['light_status'] == 5) {
+            $sql = "select * from og_department where depart_id=" . $rows[0]['deliver_to_departid'];
+            $dep = DB::executeAll($sql);
+            $rows[0]['toDepart'] = $dep[0]['depart_name'];
+        }
+        // 是转交的任务
+        if ($rows[0]['deliver_from_departid']) {
+            $sql = "select * from og_department where depart_id=" . $rows[0]['deliver_from_departid'];
+            $dep = DB::executeAll($sql);
+            $rows[0]['fromDepart'] = $dep[0]['depart_name'];
+        }
+        $rows[0]['text'] = str_replace("\n", "&#13;&#10;", $rows[0]['text']);
+        tpl_assign('taskDetail', $rows[0]);
     }
 
     /**
@@ -280,14 +325,14 @@ AND x.depart_id = y.depart_id ";
         $randNum = rand(1, 3);
         $sql = "update " . TABLE_PREFIX . "project_tasks set light_status=1,completed_on=now(),complete_detail='" . $_POST['detail'] . "'";
         // 主动督察不通过的时候再完成，不用随机督察
-        if ($randNum == 2 && $adv_supervise_status!=3) {
+        if ($randNum == 2 && $adv_supervise_status != 3) {
             $sql .= ',supervise_status=1';
         }
         // 如果是督察不通过，继续督察
-        if($adv_supervise_status == 3){
+        if ($adv_supervise_status == 3) {
             $sql .= ',advanced_supervise=1';
         }
-        if($supervise_status == 3){
+        if ($supervise_status == 3) {
             $sql .= ',supervise_status=1';
         }
 
@@ -308,6 +353,7 @@ AND x.depart_id = y.depart_id ";
         DB::commit();
         ajx_current("empty");
     }
+
     /**
      * 生成任务
      */
@@ -315,17 +361,19 @@ AND x.depart_id = y.depart_id ";
     {
         DB::beginWork();
         $id = get_id();
-        $sql = "update " . TABLE_PREFIX . "project_tasks set deleted = 1" ;
+        $sql = "update " . TABLE_PREFIX . "project_tasks set deleted = 1";
         $sql .= " where id=" . $id;
         $rows = DB::executeAll($sql);
         DB::commit();
         ajx_current("empty");
     }
-	/**
-	 * 处理任务转交
-	 */
-	 function task_deliver(){
-		if (logged_user()->isGuest()) {
+
+    /**
+     * 处理任务转交
+     */
+    function task_deliver()
+    {
+        if (logged_user()->isGuest()) {
             flash_error(lang('no access permissions'));
             ajx_current("empty");
             return;
@@ -333,47 +381,42 @@ AND x.depart_id = y.depart_id ";
         ajx_current("empty");
         $taskId = $_POST['taskId'];
         $reason = $_POST['reason'];
-        $hopeDay = $_POST['hopeDay'];
         $departId = $_POST['departId'];
-        $now = date('Y-m-d H:i:s', time());
-        $project = $_GET['active_project'];
-		$dueDate = date('Y-m-d H:i:s',strtotime("$now +7 day"));
-		DB::beginWork();
-		
-		$sql = "SELECT * FROM og_project_tasks WHERE id=".$taskId;
+
+        DB::beginWork();
+        $sql = "SELECT y.depart_id,y.depart_name,y.manager_id
+            FROM " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
+            WHERE y.depart_id = z.depart_id
+            AND z.id =" . logged_user()->getId();
+
+        $rows1 = DB::executeAll($sql);
+        DB::commit();
+        tpl_assign('departInfo', $rows1);
+
+        $from_depart_id = $rows1[0]['depart_id'];
+
+        $sql = "SELECT * FROM og_project_tasks WHERE id=" . $taskId;
         $rows = DB::executeAll($sql);
-		
-		$sql = "INSERT INTO"
-		." `og_project_tasks`(`advanced_supervise_feedback`, `supervise_feedback`, `advanced_supervise`, `supervise_status`,"
-		." `assigned_to_departid`, `parent_id`, `title`, `text`, `due_date`, `start_date`, `assigned_to_company_id`,"
-		." `assigned_to_user_id`, `assigned_on`, `assigned_by_id`, `time_estimate`, `completed_on`, `complete_detail`,"
-		." `completed_by_id`, `created_on`, `created_by_id`, `updated_on`, `updated_by_id`, `trashed_on`, `trashed_by_id`,"
-		." `archived_on`, `archived_by_id`, `started_on`, `started_by_id`, `priority`, `state`, `order`, `milestone_id`,"
-		." `is_private`, `is_template`, `from_template_id`, `repeat_end`, `repeat_forever`, `repeat_num`, `repeat_d`, `repeat_m`,"
-		." `repeat_y`, `repeat_by`, `object_subtype`, `assigned_to_project_id`, `light_status`, `deleted`,`reason_deliver`) "
-		."VALUES ('".$rows[0]['advanced_supervise_feedback']."','".$rows[0]['supervise_feedback']."','0',"
-		."'0','".$departId."','".$rows[0]['parent_id']."','".$rows[0]['title']."',"
-		."'".$rows[0]['text']."','".$dueDate."','".$rows[0]['start_date']."','".$rows[0]['assigned_to_company_id']."','".$rows[0]['assigned_to_user_id']."',"
-		."'".$rows[0]['assigned_on']."','".$rows[0]['assigned_by_id']."','".$rows[0]['time_estimate']."','".$rows[0]['completed_on']."',"
-		."'".$rows[0]['complete_detail']."','".$rows[0]['completed_by_id']."','".$rows[0]['created_on']."','".$rows[0]['created_by_id']."','".$rows[0]['updated_on']."',"
-		."'".$rows[0]['updated_by_id']."','".$rows[0]['trashed_on']."','".$rows[0]['trashed_by_id']."','".$rows[0]['archived_on']."','".$rows[0]['archived_by_id']."',"
-		."'".$rows[0]['started_on']."','".$rows[0]['started_by_id']."','".$rows[0]['priority']."','".$rows[0]['state']."',"
-		."'".$rows[0]['order']."','".$rows[0]['milestone_id']."','".$rows[0]['is_private']."','".$rows[0]['is_template']."','".$rows[0]['from_template_id']."',"
-		."'".$rows[0]['repeat_end']."','".$rows[0]['repeat_forever']."','".$rows[0]['repeat_num']."','".$rows[0]['repeat_d']."','".$rows[0]['repeat_m']."',"
-		."'".$rows[0]['repeat_y']."','".$rows[0]['repeat_by']."','".$rows[0]['object_subtype']."','".$rows[0]['assigned_to_project_id']."',"
-		."'".$rows[0]['light_status']."','".$rows[0]['deleted']."','".$reason."')";
-		
+        $data = $rows[0];
+        $due_date = $data['due_date'];
+
+        $sql = "INSERT INTO `" . TABLE_PREFIX . "project_tasks` (
+           `supervise_status`,`assigned_to_departid`,  `title`, `text`, `due_date`,
+           `created_on`, `created_by_id`,`light_status`,`reason_deliver`,
+           `deliver_from_taskid`,`deliver_from_departid`) VALUES (
+           '0', '" . $departId . "','" . $data['title'] . "','" . $data['detail'] . "','" . date("Y-m-d H:i:s", strtotime("$due_date +7   day")) . "',
+           now(),'" . logged_user()->getId() . "',2,'" . $reason . "'," . $data['id'] . ",".$from_depart_id.")";
+
         DB::execute($sql);
-		
-		
-		//更新状态
-        $sql = "UPDATE `og_project_tasks` SET `light_status`=5 WHERE id=".$taskId;
+
+        //更新状态
+        $sql = "UPDATE `og_project_tasks` SET `light_status`=5,`deliver_to_departid`=" . $departId . " WHERE id=" . $taskId;
         DB::execute($sql);
-		
+
         DB::commit();
         ajx_current("empty");
-	 }
-	 
+    }
+
     /**
      * 处理任务延期的申请
      */
@@ -502,7 +545,7 @@ where id = $taskId";
         $id = get_id();
         DB::beginWork();
         $sql = "update `" . TABLE_PREFIX . "project_tasks` set
-        supervise_status=2,supervise_feedback='".$_POST['feedback']."'  where id=$id";
+        supervise_status=2,supervise_feedback='" . $_POST['feedback'] . "'  where id=$id";
         DB::execute($sql);
         DB::commit();
         ajx_current("empty");
@@ -522,7 +565,7 @@ where id = $taskId";
         $id = get_id();
         DB::beginWork();
         $sql = "update `" . TABLE_PREFIX . "project_tasks` set
-       advanced_supervise=2,advanced_supervise_feedback='".$_POST['feedback']."'   where id=$id";
+       advanced_supervise=2,advanced_supervise_feedback='" . $_POST['feedback'] . "'   where id=$id";
         DB::execute($sql);
         DB::commit();
         ajx_current("empty");
@@ -542,7 +585,7 @@ where id = $taskId";
         $assigned_to_departid = $_POST['assigned_to_departid'];
         DB::beginWork();
         $sql = "update `" . TABLE_PREFIX . "project_tasks` set
-        supervise_status=3,supervise_feedback='".$_POST['feedback']."' where id=$id";
+        supervise_status=3,supervise_feedback='" . $_POST['feedback'] . "' where id=$id";
         DB::execute($sql);
         $MINUS_SCORE = 4;
         $sql = "UPDATE  og_department
@@ -589,7 +632,7 @@ where id = $taskId";
         DB::beginWork();
         // 1状态设为不通过
         $sql = "update `" . TABLE_PREFIX . "project_tasks` set
-        advanced_supervise=3,advanced_supervise_feedback='".$_POST['feedback']."' where id=$id";
+        advanced_supervise=3,advanced_supervise_feedback='" . $_POST['feedback'] . "' where id=$id";
         DB::execute($sql);
         $MINUS_SCORE = 4;
         // 1给责任科室扣分
@@ -616,7 +659,7 @@ where id = $taskId";
 
 
         // 如果随机督察的结果是通过，认为效能办失职，扣效能办4分
-        if($random_status ==2 ){
+        if ($random_status == 2) {
             $sql = "UPDATE  og_department
              SET score =score-$MINUS_SCORE  WHERE  depart_id = 1";
             $sql2 = "INSERT INTO og_score_detail  ( `depart_id`, `minus`, `task_id`, `minus_time`, `type`) VALUES (1 ,$MINUS_SCORE ,$id, NOW(),'adv_reject');";
@@ -627,8 +670,6 @@ where id = $taskId";
         DB::commit();
         ajx_current("empty");
     }
-
-
 
 
 } // TaskController

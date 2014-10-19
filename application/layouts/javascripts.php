@@ -24,6 +24,8 @@ if (defined('DEBUG_JS') && DEBUG_JS) {
         'og/ContentPanel.js',
         'og/layout.js',
     	'og/EventPopUp.js',
+        'og/jquery.min.js',
+        'og/bootstrap.min.js'
     );
 }
 return array(
@@ -49,5 +51,7 @@ return array(
         'og/ContentPanel.js',
         'og/layout.js',
 		'og/EventPopUp.js',
+    'og/jquery.min.js',
+        'og/bootstrap.min.js'
 );
 ?>
