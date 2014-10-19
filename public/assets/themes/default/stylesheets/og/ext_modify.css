@@ -20,7 +20,7 @@
 .x-tab-strip .x-tab-with-icon span.x-tab-strip-text {
     color: white;
     font-size: 11pt;
-    height: 16px;
+    height: 20px;
 }
 
 .x-tab-panel-header, .x-tab-panel-footer {
@@ -121,6 +121,7 @@ ul.x-tab-strip   .x-tab-strip-active {
 
 .x-tab-strip .x-tab-strip-active .x-tab-strip-inner span.x-tab-strip-text {
     color: #333;
+    height: 25px;
     font-weight: 700;
 }
 .x-border-layout-ct {

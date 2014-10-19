@@ -47,7 +47,7 @@ foreach ($departInfo as $item) {
      style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
     <div class="task-bulletin">
         <table width="100%" border="0">
-            <tr style="color:#ACA4A4">
+            <tr >
                 <td rowspan="2"
                     style="vertical-align: middle;font-weight: bold;color:#000">
                     <?php
@@ -62,11 +62,11 @@ foreach ($departInfo as $item) {
                 <td>科室得分</td>
             </tr>
             <tr>
-                <td id="light-count-4">0</td>
-                <td id="light-count-3">0</td>
-                <td id="light-count-2">0</td>
-                <td id="light-count-1">0</td>
-                <td id="depart-score"></td>
+                <td id="light-count-4" class="num">0</td>
+                <td id="light-count-3" class="num">0</td>
+                <td id="light-count-2" class="num">0</td>
+                <td id="light-count-1" class="num">0</td>
+                <td id="depart-score" class="num"></td>
             </tr>
 
         </table>

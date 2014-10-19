@@ -108,7 +108,7 @@ ul.x-tab-strip li.x-tab-edge{float:left;margin:0!important;padding:0!important;b
 .x-tab-strip-top .x-tab-strip-over .x-tab-strip-inner{background-position:0 -251px;}
 .x-tab-strip-top .x-tab-strip-active .x-tab-right{background-position:0 0;}
 .x-tab-strip-top .x-tab-strip-active .x-tab-left{background-position:right -301px;}
-.x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner{background-position:0 -151px;padding: 4px;}
+.x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner{background-position:0 -151px;padding: 4px;height: 25px;}
 .x-tab-strip-bottom .x-tab-right{background:url(../images/default/tabs/tab-btm-inactive-right-bg.gif) no-repeat bottom right;}
 .x-tab-strip-bottom .x-tab-left{background:url(../images/default/tabs/tab-btm-inactive-left-bg.gif) no-repeat bottom left;}
 .x-tab-strip-bottom .x-tab-strip-active .x-tab-right{background:url(../images/default/tabs/tab-btm-right-bg.gif) no-repeat bottom left;}
