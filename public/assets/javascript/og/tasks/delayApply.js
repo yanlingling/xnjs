@@ -24,8 +24,11 @@ ogTasks.viewDelayApplyDetail = function (id) {
 
     var container_id = 'apply-detail' + id;
     var ele = $('#' + container_id);
-
-    ele.toggle(500);
+    if (ele.is(':visible')) {
+        ele.addClass('hide');
+    } else {
+        ele.removeClass('hide');
+    }
 }
 
 /**
