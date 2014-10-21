@@ -1202,7 +1202,7 @@ function transTaskStatus($status,$toDepart)
         case 3:
         case 4:
             return '已超期';
-        case 5:
+        case 0:
             return '已转交'.$toDepart;
     }
 }

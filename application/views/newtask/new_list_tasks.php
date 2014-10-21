@@ -26,7 +26,7 @@ foreach ($departInfo as $item) {
 <div>
     <div class="sub-tab">
         <span id='task-sub-link'
-              class="<?php echo $tab == 'apply' ? '' : 'sub-tab-content'; ?>"><?php //echo $departName; ?>岗位职责</span>
+              class="<?php echo $tab == 'task' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>岗位职责</span>
         <span id='apply-sub-link' class="<?php echo $tab == 'apply' ? 'sub-tab-content' : ''; ?>">延期申请</span>
         <span id='supervise-sub-link' class="<?php
         //只有效能办，并且是科长查看的时候，才有监督岗位职责，局长和副局长也能进来
@@ -35,6 +35,7 @@ foreach ($departInfo as $item) {
         <span id='comment-sub-link' class="<?php
         //只有效能办,副局长，局长对完成的任务评价
         echo $has_comment_auth ? '' : 'hide';
+        echo $tab == 'comment' ? 'sub-tab-content' : '';
         ?>">待评价岗位职责</span>
     </div>
 
@@ -365,7 +366,7 @@ function getTaskLightStatus($status)
         case 1:
             $str = '<span class="ico-task-light-green" title="已完成"></span>';
 			break;
-		case 5:
+		case 0:
             $str = '<span title="已转交">已转交</span>';
             break;
         case 2:
@@ -549,7 +550,7 @@ function getoptcontent($status, $id, $task_id, $isSelf)
 
 <!--  督察岗位职责面板 begin-->
 
-<div id="superviseTabContent" class="hide"
+<div id="superviseTabContent"  class="<?php echo $tab == 'supervise' ? '' : 'hide'; ?>"
      style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
     <div class="table-header">
         <table width='100%'>
@@ -630,7 +631,7 @@ function getSuperviseOptContent($status, $task_id, $due_date, $depart_id, $adv_s
 
 <!--  评价岗位职责面板 begin-->
 
-<div id="commentTabContent" class="hide"
+<div id="commentTabContent" class="<?php echo $tab == 'comment' ? '' : 'hide'; ?>"
      style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
     <div class="table-header">
         <table width='100%'>
