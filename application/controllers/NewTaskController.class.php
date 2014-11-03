@@ -96,14 +96,14 @@ AND x.depart_id = y.depart_id ";
             and x.deleted = !1
             and x.light_status=1";
             if ($depart_name == '效能办') {
-                $sql .= " and comment_xiaoneng=''";
+                $sql .= " and comment_status_xiaoneng=0";
             } else if (logged_user()->getUserRole() == '副局长') {
-                $sql .= " and comment_fujuzhang=''
+                $sql .= " and comment_status_fujuzhang=0
                  and x.assigned_to_departid =$depart_id";
                 // and z.id=" . logged_user()->getId();
                 //and FIND_IN_SET(z.id, y.fujuzhang_id) !=0
             } else if (logged_user()->getUserRole() == '局长') {
-                $sql .= " and comment_juzhang='' and x.assigned_to_departid =$depart_id";
+                $sql .= " and comment_status_juzhang=0 and x.assigned_to_departid =$depart_id";
             }
             $sql .= " order by x.completed_on DESC";
             DB::beginWork();
@@ -226,7 +226,7 @@ AND x.depart_id = y.depart_id ";
             FROM  " . TABLE_PREFIX . "project_tasks as y
             WHERE  `assigned_to_departid` =$dep_id
             and y.deleted!=1
-            AND light_status =1 and comment_fujuzhang=''
+            AND light_status =1 and comment_status_fujuzhang=0
             ";
             }
             if (logged_user()->getUserRole() == '局长') {
@@ -234,7 +234,7 @@ AND x.depart_id = y.depart_id ";
             FROM  " . TABLE_PREFIX . "project_tasks as y
             WHERE  `assigned_to_departid` =$dep_id
             and y.deleted!=1
-            AND light_status =1 and comment_juzhang=''
+            AND light_status =1 and comment_status_juzhang=0
             ";
             }
             $rows3 = DB::executeAll($sql3);
@@ -283,7 +283,10 @@ AND x.depart_id = y.depart_id ";
             x.created_on,x.reason_deliver,x.deliver_to_departid,x.deliver_from_departid,
             x.comment_juzhang,
             x.comment_fujuzhang,
-            x.comment_xiaoneng
+            x.comment_xiaoneng,
+            x.comment_status_juzhang,
+            x.comment_status_fujuzhang,
+            x.comment_status_xiaoneng
             FROM og_project_tasks AS x, og_users AS z, og_department AS y
             WHERE x.assigned_to_departid = y.depart_id
             AND z.id  = y.manager_id
@@ -479,17 +482,18 @@ AND x.depart_id = y.depart_id ";
         ajx_current("empty");
         $taskId = $_POST['taskId'];
         $comment = $_POST['comment'];
+        $status = $_POST['status'];
         $role = logged_user()->getUserRole();
         DB::beginWork();
         if ($role == '局长') {
             //更新状态
-            $sql = "UPDATE `og_project_tasks` SET `comment_juzhang`=''" . $comment . "' WHERE id=" . $taskId;
+            $sql = "UPDATE `og_project_tasks` SET `comment_juzhang`='" . $comment . "' , `comment_status_juzhang`=" . $status . " WHERE id=" . $taskId;
         } else if ($role == '副局长') {
             //更新状态
-            $sql = "UPDATE `og_project_tasks` SET `comment_fujuzhang`='" . $comment . "' WHERE id=" . $taskId;
+            $sql = "UPDATE `og_project_tasks` SET `comment_fujuzhang`='" . $comment . "'  , `comment_status_fujuzhang`=" . $status . " WHERE id=" . $taskId;
         } else {
             //更新状态
-            $sql = "UPDATE `og_project_tasks` SET `comment_xiaoneng`='" . $comment . "' WHERE id=" . $taskId;
+            $sql = "UPDATE `og_project_tasks` SET `comment_xiaoneng`='" . $comment . "' , `comment_status_xiaoneng`=" . $status . " WHERE id=" . $taskId;
         }
         DB::execute($sql);
         DB::commit();

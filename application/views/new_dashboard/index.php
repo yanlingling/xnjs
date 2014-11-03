@@ -140,7 +140,7 @@ require_javascript("og/jquery.min.js");
                         <i class="font-icon-new"></i>
                     </h1>
                     <div class="description">
-                        为群众办事，请群众监督，让群众满意
+                        通报工作情况，交流工作心得，增强集体战斗力
                     </div>
                 </div>
                 <div class="left">

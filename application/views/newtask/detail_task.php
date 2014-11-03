@@ -66,15 +66,33 @@ $item = $taskDetail;
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">局长评价:</label>
-            <div class="col-sm-10">
-                <textarea class="form-control-static" readonly="readonly">
-                    <?php echo $item['comment_juzhang'];?>
-                </textarea>
+            <label class="col-sm-2 control-label">局领导评价: </label>
+
+            <div class="col-sm-3">
+                <p class="form-control-static" >
+                    <?php echo getCommentValue($item['comment_status_juzhang'])?>
+                </p>
             </div>
         </div>
+    <div class="form-group">
+        <div  class="col-sm-2">&nbsp;</div>
+        <div class="col-sm-10">
+            <textarea class="form-control-static" readonly="readonly">
+                <?php echo $item['comment_juzhang'];?>
+            </textarea>
+        </div>
+        </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">副局长评价:</label>
+            <label class="col-sm-2 control-label">分管领导评价:</label>
+            <div class="col-sm-3">
+                <p class="form-control-static" >
+                    <?php echo getCommentValue($item['comment_status_fujuzhang'])?>
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div  class="col-sm-2">&nbsp;</div>
             <div class="col-sm-10">
                 <textarea class="form-control-static" readonly="readonly">
                     <?php echo $item['comment_fujuzhang'];?>
@@ -82,7 +100,16 @@ $item = $taskDetail;
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">效能办评价:</label>
+            <label class="col-sm-2 control-label">效能办评价:
+            </label>
+            <div class="col-sm-3">
+                <p class="form-control-static" >
+                    <?php echo getCommentValue($item['comment_status_xiaoneng'])?>
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div  class="col-sm-2">&nbsp;</div>
             <div class="col-sm-10">
                 <textarea class="form-control-static" readonly="readonly">
                     <?php echo $item['comment_xiaoneng'];?>
@@ -158,3 +185,19 @@ $item = $taskDetail;
     ?>
 
 </form>
+<?php
+function getCommentValue($key) {
+    switch($key) {
+        case 0:
+            return '待评价';
+        case 1:
+            return '优秀';
+        case 2:
+            return '好';
+        case 3:
+            return '中';
+        case 4:
+            return '差';
+    }
+}
+?>

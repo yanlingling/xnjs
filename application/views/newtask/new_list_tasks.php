@@ -695,6 +695,15 @@ if ($i == 0) {
                     </div>
                     <div class="form-group">
                         <label >评价：</label>
+                        <select id="comment-status">
+                            <option value>请选择评价:</option>
+                            <option value=1>优秀</option>
+                            <option value=2>好</option>
+                            <option value=3>中</option>
+                            <option value=4>差</option>
+                        </select>
+                    </div>
+                    <div>
                         <textarea id="comment-text" class="form-control" ></textarea>
                         <input type="hidden" id="comment-task-id" value="" />
                     </div>
@@ -707,7 +716,7 @@ if ($i == 0) {
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="comment-task-confirm" onclick="og.taskList.commentTaskOK()">转交</button>
+                <button type="button" class="btn btn-primary" id="comment-task-confirm" onclick="og.taskList.commentTaskOK()">评价</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
         </div>
