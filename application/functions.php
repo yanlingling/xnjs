@@ -1192,31 +1192,4 @@ function get_work_days($start_date,$end_date,$is_workday = true){
     return $weekend_days;
 }
 
-function transTaskStatus($status,$toDepart)
-{
-    switch ($status) {
-        case 1:
-            return '已完成';
-        case 2:
-            return '进行中';
-        case 3:
-        case 4:
-            return '已超期';
-        case 0:
-            return '已转交'.$toDepart;
-    }
-}
-function transTaskSupervise($status)
-{
-    switch ($status) {
-        case 0:
-            return '不需要督察';
-        case 1:
-            return '督察中';
-        case 2:
-            return '督察通过';
-        case 3:
-            return '督察未通过';
-    }
-}
 ?>

@@ -18,6 +18,8 @@ $genid = gen_id();
              科室风险点</span>
              -->
 
+        <span class="<?php
+        echo $canCreateRisk == 0 ? 'hide' : '';?>";>&nbsp;| &nbsp;</span>
 
         <span id='risk-content-tab' class="<?php
         echo $tab == 'question' ? 'sub-tab-content' : '';

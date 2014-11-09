@@ -10,11 +10,13 @@ $genid = gen_id();
         <span id='my-learning-tab'
               class="<?php echo $tab == 'apply' ? '' : 'sub-tab-content'; ?>"><?php //echo $departName; ?>
             必学内容</span>
+        &nbsp;| &nbsp;
 
         <span id='optional-learning-tab'>
             选学内容
         </span>
 
+        <?php  echo ($canCreateLearning == 1 && $selfView) ? '&nbsp;| &nbsp;' : ''; ?>
         <span id='learning-content-tab' class="<?php
         echo $tab == 'apply' ? 'sub-tab-content' : '';
         echo ($canCreateLearning == 1 && $selfView) ? '' : 'hide'; ?>">

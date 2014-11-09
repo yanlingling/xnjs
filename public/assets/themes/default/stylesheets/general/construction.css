@@ -473,7 +473,6 @@ td.td-pr {
     position: absolute;
     left: 4px;
     bottom: 4px;
-    border-top: 1px solid #ddd;
 }
 .dash-list .item .app-icon, .dash-list .item img {
     width: 64px;

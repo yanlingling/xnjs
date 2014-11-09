@@ -16,12 +16,15 @@ $genid = gen_id();
 
         <div  class="<?php echo ($userRole == '局长' || $departName == '效能办') ? 'inline' : 'hide'; ?>">
 
+            &nbsp;| &nbsp;
              <span id='best-depart-tab' class="sub-tab-span">
              卫生最佳科室
             </span>
+            &nbsp;| &nbsp;
             <span id='best-floor-tab' class="sub-tab-span">
              卫生最佳责任区
             </span>
+            &nbsp;| &nbsp;
             <span id='chuqintongji-tab' class="sub-tab-span">
             考勤统计
             </span>

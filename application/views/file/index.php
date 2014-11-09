@@ -39,6 +39,7 @@ $genid = gen_id();
         </span>
 
 
+                &nbsp;| &nbsp;
              <span id='has-read-tab' class="<?php echo $currentTabId == 'has-read-tab'? 'sub-tab-content': ''?>">
              已阅文件
             </span>
@@ -46,11 +47,13 @@ $genid = gen_id();
 
                 <div class="<?php echo $canManageFile==1? 'inline' : 'hide'; ?>">
 
+                    &nbsp;| &nbsp;
              <span id='all-file-tab'  class="<?php echo $currentTabId == 'all-file-tab'? 'sub-tab-content': ''?>" >
            所有传阅文件</span>
 
 
                 </div>
+                &nbsp;| &nbsp;
              <span id='jufa-file-tab'   class="<?php echo $currentTabId == 'jufa-file-tab'? 'sub-tab-content': ''?>">
            局发文件
             </span>

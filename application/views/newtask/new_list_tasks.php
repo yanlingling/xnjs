@@ -1,5 +1,4 @@
-﻿<?php
-require_javascript('og/bootstrap.min.js');
+<?php
 require_javascript('og/jquery.min.js');
 require_javascript('og/cookie.js');
 require_javascript("og/CSVCombo.js");
@@ -26,18 +25,16 @@ foreach ($departInfo as $item) {
 <div>
     <div class="sub-tab">
         <span id='task-sub-link'
-              class="<?php echo $tab == 'task' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>岗位职责</span>
+              class="<?php echo $tab == 'apply' ? '' : 'sub-tab-content'; ?>"><?php //echo $departName; ?>岗位职责</span>
+        &nbsp;| &nbsp;
         <span id='apply-sub-link' class="<?php echo $tab == 'apply' ? 'sub-tab-content' : ''; ?>">延期申请</span>
+        &nbsp;| &nbsp;
         <span id='supervise-sub-link' class="<?php
         //只有效能办，并且是科长查看的时候，才有监督岗位职责，局长和副局长也能进来
         echo isset($supervise_task_list) && $userRole == '科长' ? '' : 'hide';
         ?>">督察岗位职责</span>
-        <span id='comment-sub-link' class="<?php
-        //只有效能办,副局长，局长对完成的任务评价
-        echo $has_comment_auth ? '' : 'hide';
-        echo $tab == 'comment' ? 'sub-tab-content' : '';
-        ?>">待评价岗位职责</span>
     </div>
+
 
     <div class="clearFloat"></div>
 </div>
@@ -49,7 +46,7 @@ foreach ($departInfo as $item) {
      style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
     <div class="task-bulletin">
         <table width="100%" border="0">
-            <tr >
+            <tr style="color:#ACA4A4">
                 <td rowspan="2"
                     style="vertical-align: middle;font-weight: bold;color:#000">
                     <?php
@@ -64,11 +61,11 @@ foreach ($departInfo as $item) {
                 <td>科室得分</td>
             </tr>
             <tr>
-                <td id="light-count-4" class="num">0</td>
-                <td id="light-count-3" class="num">0</td>
-                <td id="light-count-2" class="num">0</td>
-                <td id="light-count-1" class="num">0</td>
-                <td id="depart-score" class="num"></td>
+                <td id="light-count-4">0</td>
+                <td id="light-count-3">0</td>
+                <td id="light-count-2">0</td>
+                <td id="light-count-1">0</td>
+                <td id="depart-score"></td>
             </tr>
 
         </table>
@@ -140,60 +137,55 @@ foreach ($departInfo as $item) {
     <td class='d5'><?php echo getSuperviseStatus($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d6'><?php echo getSuperviseResult($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d7'><?php echo getTaskOptContent($item['light_status'], $item['id'], $raw_time,
-            $logged_user_depart, $isSelf, $item['supervise_status'], $item['advanced_supervise'],
-            $item['assigned_to_departid'],$item['text']) ?></td>
+            $logged_user_depart, $isSelf, $item['supervise_status'], $item['advanced_supervise'], $item['assigned_to_departid']) ?></td>
     </tr></table></div>
 <!--查看岗位职责出现的-->
+<div id="task-more-detail<?php echo $item['id'] ?>" class="ogAppendBox hide">
+    <table width="100%" style="text-align: left" class="task-detail">
+        <tr>
+            <td>岗位职责：<?php echo $item['title'] ?></td>
+            <td>责任人：<?php echo $item['username'] ?></td>
+        </tr>
+        <tr>
+            <td colspan="2">目标任务：</td>
 
+        </tr>
+        <tr>
+            <td colspan="2">
+                <textarea readonly="readonly"><?php echo $item['text'] ?></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>当前状态：<?php echo transTaskStatus($item['light_status']) ?></td>
+            <td>到期时间：<?php echo $item['due_date'] ?></td>
+        </tr>
+        <?php
+        if ($item['light_status'] == 1) {
+            echo "<tr><td colspan='2'>完成情况描述：</td></tr>";
+            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['complete_detail'] . "</textarea></td></tr>";
+            $j = explode(" ", $item['completed_on']);
+            $item['completed_on'] = $j[0];
+            echo "<tr><td>完成时间：" . $item['completed_on'] . "</td><td>督察情况:" . transTaskSupervise($item['supervise_status']) . "</td></tr>";
+        }
+        if ($item['supervise_status'] == 3 || $item['supervise_status'] == 2) {
+            echo "<tr><td colspan='2'>随机督察意见：</td></tr>";
+            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['supervise_feedback'] . "</textarea></td></tr>";
+        }
+        if ($item['advanced_supervise'] == 3 || $item['advanced_supervise'] == 2) {
+            echo "<tr><td colspan='2'>主动督察意见：</td></tr>";
+            echo "<tr><td colspan='2'><textarea readonly='readonly'>" . $item['advanced_supervise_feedback'] . "</textarea></td></tr>";
+        }
 
-<!-- 转交任务Modal
- -->
-<div class="modal" id="transTaskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">任务转交</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                        <label >执法任务：</label>
-                        <label id="trans-task-name"></label>
-                    </div>
-                    <div class="form-group">
-                        <label >转交理由：</label>
-                        <textarea id="trans-reason" class="form-control" ></textarea>
-                        <input type="hidden" id="transout-task-id" value="" />
-                    </div>
-                    <div class="form-group">
-                        <label>科室</label>
-                        <select class="form-control" id="trans-depart" >
-                            <option value="">请选择科室</option>
-                            <?php
-                            foreach ($depart_list as $item) {
-                                echo '<option value="'.$item['depart_id'].'">'.$item['depart_name'].'</option>';
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <div class="form-group" >
-                        <div class="col-sm-4">
-                            <span class="bg-danger" id="tans-error"> </span>
-                            <span class="bg-success" id="tans-info">   </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="trans-task-confirm" onclick="og.taskList.tansTaskOK()">转交</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
+        ?>
+
+        <tr>
+            <td colspan="2">
+                <span class="small-button"
+                      onclick="og.taskList.viewTaskDetailCancelClick(<?php echo $item['id'] ?>)">取消</span>
+            </td>
+        </tr>
+    </table>
 </div>
-
-
 
 <?php
 }
@@ -204,7 +196,32 @@ if ($i == 0) {
 }
 ?>
 <?php
+function transTaskSupervise($status)
+{
+    switch ($status) {
+        case 0:
+            return '不需要督察';
+        case 1:
+            return '督察中';
+        case 2:
+            return '督察通过';
+        case 3:
+            return '督察未通过';
+    }
+}
 
+function transTaskStatus($status)
+{
+    switch ($status) {
+        case 1:
+            return '已完成';
+        case 2:
+            return '进行中';
+        case 3:
+        case 4:
+            return '已超期';
+    }
+}
 
 function getSuperviseStatus($status, $advanced_supervise)
 {
@@ -262,7 +279,7 @@ function hasDeleteAuth($departName)
     }
 }
 
-function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $superviseStatus, $advSupervise, $depart_id,$taskName)
+function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $superviseStatus, $advSupervise, $depart_id)
 {
     $userRole = logged_user()->getUserRole();
     $str = "<a onclick='og.taskList.viewTaskDetailClick($taskId)'>查看</a>";
@@ -302,11 +319,7 @@ function getTaskOptContent($status, $taskId, $dueDate, $departName, $isSelf, $su
                     // 过期的任务不能再申请延期
                     if (strtotime($dueDate) > time()) {
                         $str .= "&nbsp;&nbsp;<a onclick='og.taskList.drawDelayApply($taskId)'>申请延期</a>";
-						if($userRole == '科长'){
-							$str .= "&nbsp;&nbsp;<a onclick=og.taskList.deliverClick($taskId,'$taskName')>转交</a>";
-						}
                     }
-					
                 }
 
             }
@@ -365,9 +378,6 @@ function getTaskLightStatus($status)
     switch ($status) {
         case 1:
             $str = '<span class="ico-task-light-green" title="已完成"></span>';
-			break;
-		case 0:
-            $str = '<span title="已转交">已转交</span>';
             break;
         case 2:
             $str = '<span class="ico-task-light-gray" title="进行中"></span>';
@@ -550,7 +560,7 @@ function getoptcontent($status, $id, $task_id, $isSelf)
 
 <!--  督察岗位职责面板 begin-->
 
-<div id="superviseTabContent"  class="<?php echo $tab == 'supervise' ? '' : 'hide'; ?>"
+<div id="superviseTabContent" class="hide"
      style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
     <div class="table-header">
         <table width='100%'>
@@ -629,114 +639,9 @@ function getSuperviseOptContent($status, $task_id, $due_date, $depart_id, $adv_s
 <!--  督察岗位职责面板end -->
 
 
-<!--  评价岗位职责面板 begin-->
-
-<div id="commentTabContent" class="<?php echo $tab == 'comment' ? '' : 'hide'; ?>"
-     style="background-color:white;padding:7px;padding-top:0px;overflow-y:scroll;position:relative;">
-    <div class="table-header">
-        <table width='100%'>
-            <tr>
-                <td class="d1">岗位职责</td>
-                <td class="d2">目标任务</td>
-                <td class="d3">责任人</td>
-                <td class="d8">截止时间</td>
-                <td class="d8">完成时间</td>
-                <td class="d4">效能状态</td>
-                <td class="d7">操作</td>
-            </tr>
-        </table>
-    </div>
-    <?php
-    $i = 0;
-    foreach ($comment_task_list as $item) {
-    echo '<div id="supervise-task-list-' . $item['id'] . '"><table width=100%>';
-    $i++;
-
-    if ($i % 2 == 0) {
-        echo '<tr>';
-    } else {
-        echo '<tr class="dashaltrow">';
-    }
-    ?>
-    <td class='d1'><?php echo mb_substr($item['title'], 0, 12, "UTF-8"); ?></td>
-    <td class='d2'><?php echo mb_substr($item['text'], 0, 18, "UTF-8"); ?></td>
-    <td class='d3'><?php echo $item['username'] ?></td>
-    <td class='d4'><?php $j = explode(" ", $item['due_date']);
-        echo $j[0] ?></td>
-    <td class='d4'><?php  $j = explode(" ", $item['completed_on']);
-        echo $j[0]; ?></td>
-    <td class='d8'><?php echo getTaskLightStatus($item['light_status']) ?></td>
-    <td class='d7'><?php echo getCommentOptContent($item['id'],$item['text']) ?></td>
-    </tr></table></div>
-<?php
-}
-if ($i == 0) {
-    ?>
-    <div class="no-data">当前暂无相关数据</div>
-<?php
-}
-?>
-
-</div>
-<!-- 评价任务Modal
--->
-<div class="modal" id="commentTaskModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" >任务评价</h4>
-            </div>
-            <div class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                        <label >执法任务：</label>
-                        <label id="comment-task-name"></label>
-                    </div>
-                    <div class="form-group">
-                        <label >评价：</label>
-                        <select id="comment-status">
-                            <option value>请选择评价:</option>
-                            <option value=1>优秀</option>
-                            <option value=2>好</option>
-                            <option value=3>中</option>
-                            <option value=4>差</option>
-                        </select>
-                    </div>
-                    <div>
-                        <textarea id="comment-text" class="form-control" ></textarea>
-                        <input type="hidden" id="comment-task-id" value="" />
-                    </div>
-                    <div class="form-group" >
-                        <div class="col-sm-4">
-                            <span class="bg-danger" id="comment-error"> </span>
-                            <span class="bg-success" id="comment-info">   </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="comment-task-confirm" onclick="og.taskList.commentTaskOK()">评价</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--  评价岗位职责面板end -->
-
-
 </div>
 
 
-<?php
-function getCommentOptContent($task_id,$text)
-{
-    $str = "<a onclick='og.taskList.viewTaskDetailClick($task_id)'>查看</a>";
-    return $str.="  <a onclick=og.taskList.commentClick($task_id,'$text')>评价</a>" ;
-}
-
-?>
 </div>
 <script>
     function renderBulletin() {
@@ -768,13 +673,10 @@ function getCommentOptContent($task_id,$text)
         $('#tasksTabContent').addClass('hide');
         $('#applyTabContent').addClass('hide');
         $('#superviseTabContent').addClass('hide');
-        $('#commentTabContent').addClass('hide');
         if (ele.html() == '延期申请') {
             $('#applyTabContent').removeClass('hide');
         } else if (ele.html() == '督察岗位职责') {
             $('#superviseTabContent').removeClass('hide');
-        }else if (ele.html() == '待评价岗位职责') {
-            $('#commentTabContent').removeClass('hide');
         }
         else {
             $('#tasksTabContent').removeClass('hide');
