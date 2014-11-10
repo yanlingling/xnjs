@@ -34,8 +34,6 @@ foreach ($departInfo as $item) {
         echo isset($supervise_task_list) && $userRole == '科长' ? '' : 'hide';
         ?>">督察岗位职责</span>
     </div>
-
-
     <div class="clearFloat"></div>
 </div>
 <div id="" class="ogContentPanel" style="background-color:white;background-color:#F0F0F0;height:100%;width:100%;"
