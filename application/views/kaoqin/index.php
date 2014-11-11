@@ -112,17 +112,19 @@ $genid = gen_id();
                         echo '<tr class="dashaltrow">';
                     }?>
                     <td class='duty-d1'>
-                        <?php echo $item['cur_date'].$item['cur_item_range'];
+                        <?php echo $item['jiancha_time'];
                         ?>
                     </td>
 
 
-                    <td class='duty-d2'><?php echo $item['onDuty']; ?></td>
+                    <td class='duty-d2'><?php echo $item['onDutyUser']; ?></td>
                     <td class="duty-d3"><?php echo $item['create_time']; ?>
                     <td class='duty-d4'><?php echo $item['username']; ?></td>
                     <td class='duty-d5'><?php
                         if ($canManageJilvjiancha) {
-                            echo "<a onclick='og.jilvjiancha.writeJilvjiancha(1," . $item['id'] . ")'>编辑</a>";
+                            echo "<a onclick='og.jilvjiancha.viewJilvjiancha(" . $item['id'] . ")'>查看</a>";
+                            echo "&nbsp;&nbsp;<a onclick='og.jilvjiancha.del(" . $item['id'] . ")'>删除</a>";
+                            //echo "<a onclick='og.jilvjiancha.writeJilvjiancha(1," . $item['id'] . ")'>编辑</a>";
                         } else {
                             echo "<a onclick='og.jilvjiancha.viewJilvjiancha(" . $item['id'] . ")'>查看</a>";
                         }
@@ -149,7 +151,6 @@ function getKaoqinOpt($id, $canManage)
 {
     $str = "<a onclick='og.kaoqinducha.view(" . $id . ",2)'>查看</a>";
     if ($canManage) {
-
         $str .= "&nbsp;&nbsp;<a onclick='og.kaoqinducha.del(" . $id . ")'>删除</a>";
     }
     return $str;
@@ -160,7 +161,7 @@ function getKaoqinOpt($id, $canManage)
 
     // 用户点击过tab的切换，按用户点击的来
     if (typeof og.kaoqinduchaSubTab != 'undefined') {
-        showSubTab($('#' + og.taskSubTab));
+        showSubTab($('#' + og.kaoqinduchaSubTab ));
     }
 
     function showSubTab(ele) {
@@ -176,6 +177,7 @@ function getKaoqinOpt($id, $canManage)
     }
     $('.sub-tab span').click(function () {
         var ele = $(this);
+
         og.kaoqinduchaSubTab = ele.attr('id');
         showSubTab(ele);
     });

@@ -54,7 +54,7 @@ class KaoqinController extends ApplicationController
 
         //纪律检查列表查询
 
-        $sql = "SELECT x.id,cur_date,cur_time_range,y.username,x.create_time
+        $sql = "SELECT x.id,jiancha_time,x.onDutyUser,y.username,x.create_time
             FROM  `og_jilvjiancha` as x ,og_users as y where x.user_id=y.id";
         if (isset($_POST['condition'])) {
             if (preg_match("/(\d+)-(\d+)-(\d+)/", $_POST['condition'])) {
@@ -170,9 +170,65 @@ FROM  `og_department` where depart_id!=1 and depart_id!=8 ";
             tpl_assign('jilv_info', $rows[0]);
             tpl_assign('opt', $_GET['opt']);
             tpl_assign('id', $_GET['id']);
+        } else {
+
+            tpl_assign('opt', 'add');
         }
     }
+    function add_jilvjiancha()
+    {
+        if (isset($_GET['opt']) && $_GET['opt'] == 'add') {
+
+            $sql = "INSERT INTO `og_jilvjiancha` (`work_status1`,`work_status2`,`work_status3`,`work_status4`,`work_status5`,".
+                " `most_clean_department`,`least_clean_department`,  `most_clean_floor`,`least_clean_floor`," .
+                " `other_content`, `jiancha_time`, `onDutyUser`,`create_time`, `last_modify_time`,`user_id`)
+                VALUES ('" . $_POST['work_status1'] . "', '" . $_POST['work_status2'] .
+                "', '" . $_POST['work_status3'] . "', '" . $_POST['work_status4'] . "','" . $_POST['work_status5'] . "',
+                   '" . $_POST['mostCleanDepart'] . "','" . $_POST['leastCleanDepart'] . "','" . $_POST['mostCleanFloor'] . "','" . $_POST['leastCleanFloor'] . "',
+                   '" . $_POST['otherContent'] . "','" . $_POST['jiancha_time'] . "','" . $_POST['jiancha_user'] . "',
+                 now(), now()," . logged_user()->getId() . ");";
+            DB::beginWork();
+            DB::executeAll($sql);
+            DB::commit();
+            ajx_current("empty");
+        }
+    }
+
+    function edit_jilvjiancha()
+    {
+        $sql = "update `og_jilvjiancha` set
+        work_status1='" . $_POST['work_status1'] . "',
+        work_status2='" . $_POST['work_status2'] . "',
+        work_status3='" . $_POST['work_status3'] . "',
+        work_status4='" . $_POST['work_status4'] . "',
+        work_status5='" . $_POST['work_status5'] . "',
+        most_clean_department='" . $_POST['mostCleanDepart'] . "',
+        least_clean_department='" . $_POST['leastCleanDepart'] . "',
+        most_clean_floor='" . $_POST['mostCleanFloor'] . "',
+        least_clean_floor='" . $_POST['leastCleanFloor'] . "',
+        other_content ='" . $_POST['otherContent'] . "',
+        jiancha_time ='" . $_POST['jiancha_time'] . "',
+        onDutyUser='" . $_POST['jiancha_user'] . "',
+        last_modify_time = now()
+        where id =" . $_GET['id'];
+        DB::beginWork();
+        DB::executeAll($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
+    function  del_jilvjiancha()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        $id = $_GET['id'];
+        DB::beginWork();
+        $sql = "delete from og_jilvjiancha where id=" . $id;
+        $rows = DB::executeAll($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
 } // TaskController
-
-
 ?>
