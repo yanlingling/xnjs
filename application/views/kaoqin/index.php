@@ -9,8 +9,10 @@ $genid = gen_id();
     <div class="sub-tab">
         <span id='kaoqin-sub-link'
               class="<?php echo $tab == 'kaoqin' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>考勤通报</span>
+        <!--
         &nbsp;| &nbsp;
-        <span id='jilv-sub-link' class="<?php echo $tab == 'jilv' ? 'sub-tab-content' : ''; ?>">纪律检查</span>
+        -->
+        <span id='jilv-sub-link' class="hide <?php echo $tab == 'jilv' ? 'sub-tab-content' : ''; ?>">纪律检查</span>
     </div>
     <div class="clearFloat"></div>
 </div>
