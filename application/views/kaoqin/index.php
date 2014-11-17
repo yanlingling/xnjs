@@ -90,7 +90,7 @@ $genid = gen_id();
             <table width='100%' class="og-table">
                 <tr>
                     <td class="duty-d1">时间</td>
-                    <td class="duty-d2">值班人</td>
+                    <td class="duty-d2">检查人</td>
                     <td class="duty-d3">创建时间</td>
                     <td class="duty-d4">创建人</td>
                     <td class="duty-d5">操作</td>

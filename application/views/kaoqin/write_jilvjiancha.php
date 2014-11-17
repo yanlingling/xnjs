@@ -11,10 +11,10 @@ $genid = gen_id();
     <table border="1" class="duty-table" style="width: 880px">
         <tr>
             <td  class='verticalM bolder'>检查时间</td>
-            <td colspan="2" class='verticalM'><input id="jilvjiancha-time" placeholder="请输入检查时间"/></td>
+            <td colspan="2" class='verticalM'><input id="jilvjiancha-time" <?php if ($opt == 'view') {echo 'readonly';}?> placeholder="请输入检查时间"/></td>
             <td>检查人</td>
             <td colspan="5">
-                <div ><input id="jilvjiancha-user" placeholder="请输入检查人"/></div>
+                <div ><input id="jilvjiancha-user" <?php if ($opt == 'view') {echo 'readonly';}?> placeholder="请输入检查人"/></div>
             </td>
         </tr>
         <tr>

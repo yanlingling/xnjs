@@ -1922,3 +1922,9 @@ select.select_milestone, select.select_task_list, select.select_message {
     position: relative;
     top: -4px;
 }
+#jilvjiancha-time {
+    width: 220px;
+}
+#jilvjiancha-user {
+    width: 390px;
+}
