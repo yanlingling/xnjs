@@ -695,16 +695,18 @@ if ($i == 0) {
                     </div>
                     <div class="form-group">
                         <label >评价：</label>
-                        <select id="comment-status">
-                            <option value>请选择评价:</option>
-                            <option value=1>优秀</option>
-                            <option value=2>好</option>
-                            <option value=3>中</option>
-                            <option value=4>差</option>
-                        </select>
+                        <label class="radio-inline">
+                            <input type="radio" name="comment-status"  value="1"> 好
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="comment-status"  value="2"> 中
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="comment-status"  value="3"> 差
+                        </label>
                     </div>
                     <div>
-                        <textarea id="comment-text" class="form-control" ></textarea>
+                        <textarea id="comment-text" class="form-control"  roww="4"></textarea>
                         <input type="hidden" id="comment-task-id" value="" />
                     </div>
                     <div class="form-group" >

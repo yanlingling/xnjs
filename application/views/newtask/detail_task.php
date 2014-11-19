@@ -191,12 +191,10 @@ function getCommentValue($key) {
         case 0:
             return '待评价';
         case 1:
-            return '优秀';
-        case 2:
             return '好';
-        case 3:
+        case 2:
             return '中';
-        case 4:
+        case 3:
             return '差';
     }
 }
