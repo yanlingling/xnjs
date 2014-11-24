@@ -52,9 +52,9 @@ require_javascript('og/cookie.js');
         </td>
         <td style="width: 100px"><?php echo getTaskLightStatus($item['light_status']) ?></td>
         <td style="width: 100px"><?php echo $item['score'] ?></td>
-        <td class="<?php echo logged_user()->getUserRole()=='局长'?'':'hide'?>"  style="width: 200px">
+        <td class=""  style="width: 200px">
             <?php
-            echo getTaskOptContent($item['depart_id'],$item['apply_num'],$item['comment_num']);
+            echo getTaskOptContent($item['depart_id'],$item['apply_num'],$item['comment_num'],logged_user()->getUserRole());
             // 有未处理的延期申请
             if($item['apply_num']>0){
                 array_push($hasApplyDepart, $item['depart_name']);
@@ -69,13 +69,17 @@ require_javascript('og/cookie.js');
     <?php
 
 
-    function getTaskOptContent($departId,$num,$numComment)
+    function getTaskOptContent($departId,$num,$numComment,$role)
     {
+        $str = '';
+        if ($role=='局长') {
+            $str.="<a onclick='og.taskList.goToDepartApply($departId)'>"
+        ."<span class='bolder'>$num</span>个未处理的延期申请</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
 
-        return "<a onclick='og.taskList.goToDepartApply($departId)'>"
-        ."<span class='bolder'>$num</span>个未处理的延期申请</a>&nbsp;&nbsp;&nbsp;&nbsp;".
-            "<a onclick='og.taskList.goToComment($departId)'>"
+        $str.= "<a onclick='og.taskList.goToComment($departId)'>"
         ."<span class='bolder'>$numComment</span>个待评价任务</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+        return $str;
 
     }
 

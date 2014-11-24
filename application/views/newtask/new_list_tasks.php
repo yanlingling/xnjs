@@ -3,6 +3,7 @@ require_javascript('og/bootstrap.min.js');
 require_javascript('og/jquery.min.js');
 require_javascript('og/cookie.js');
 require_javascript("og/CSVCombo.js");
+require_javascript("og/common.js");
 require_javascript("og/DateField.js");
 require_javascript('og/tasks/main.js');
 require_javascript('og/tasks/addTask.js');
@@ -84,6 +85,7 @@ foreach ($departInfo as $item) {
                 <td class="d3">责任人</td>
                 <td class="d8">截止时间</td>
                 <td class="d4">效能状态</td>
+                <td class="d4">效能得分</td>
                 <td class="d5">督察状态</td>
                 <td class="d6">督察结论</td>
                 <td class="d7">操作</td>
@@ -123,6 +125,12 @@ foreach ($departInfo as $item) {
         if (daysFromNow($item['created_on']) > -3) {
             echo "<span class='new-icon'></span>";
         }
+        if ($item['tuijian']) {
+            echo "<span class='icon-thumbs-up' style='color: #fa9000' title='推荐'></span>";
+        }
+        if ($item['pishi']) {
+            echo "<span class='icon-foursquare' style='color: #fc4f00' title='批示'></span>";
+        }
         ?>
     </td>
     <td class='d2' title=" <?php echo $item['text'] ?>">
@@ -132,11 +140,12 @@ foreach ($departInfo as $item) {
     <td class='d8'><?php  echo $item['due_date'];
         $dateDiff = (strtotime($j[0]) - strtotime(date('y-m-d', time()))) / 86400;
         // 最近7天要到期的任务，还没完成 都要提醒
-        if ($dateDiff >= 0 && $dateDiff <= 6 && $item['light_status'] != 1) {
+        if ($dateDiff >= 0 && $dateDiff <= 6 && $item['light_status'] != 1&& $item['light_status'] != 0) {
             array_push($lateTask, $item['title']);
         }
         ?></td>
     <td class='d4'><?php echo getTaskLightStatus($item['light_status']) ?></td>
+    <td class='d4'><a onclick='og.taskList.viewXiaonengScoreDetailClick(<?php echo $item['id'];?>)'><?php echo $item['xiaoneng_score']? $item['xiaoneng_score']: '-'?></a></td>
     <td class='d5'><?php echo getSuperviseStatus($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d6'><?php echo getSuperviseResult($item['supervise_status'], $item['advanced_supervise']) ?></td>
     <td class='d7'><?php echo getTaskOptContent($item['light_status'], $item['id'], $raw_time,
@@ -658,8 +667,8 @@ function getSuperviseOptContent($status, $task_id, $due_date, $depart_id, $adv_s
         echo '<tr class="dashaltrow">';
     }
     ?>
-    <td class='d1'><?php echo mb_substr($item['title'], 0, 12, "UTF-8"); ?></td>
-    <td class='d2'><?php echo mb_substr($item['text'], 0, 18, "UTF-8"); ?></td>
+    <td class='d1' title="<?php echo $item['title']; ?>"><?php echo mb_substr($item['title'], 0, 12, "UTF-8"); ?></td>
+    <td class='d2' title="<?php echo $item['text']; ?>"><?php echo mb_substr($item['text'], 0, 18, "UTF-8"); ?></td>
     <td class='d3'><?php echo $item['username'] ?></td>
     <td class='d4'><?php $j = explode(" ", $item['due_date']);
         echo $j[0] ?></td>
@@ -678,8 +687,9 @@ if ($i == 0) {
 ?>
 
 </div>
-<!-- 评价任务Modal
--->
+
+
+<!-- 评价任务Modal -->
 <div class="modal" id="commentTaskModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -705,7 +715,17 @@ if ($i == 0) {
                             <input type="radio" name="comment-status"  value="3"> 差
                         </label>
                     </div>
-                    <div>
+                    <div class="checkbox <?php if (!($depart_name='效能办' && $isSelf=='self')) {echo 'hide';} ?>">
+                        <label>
+                            <input type="checkbox" id="comment-tuijian"> 推荐
+                        </label>
+                    </div>
+                    <div class="checkbox <?php if (logged_user()->getUserRole() != '副局长') {echo 'hide';} ?>">
+                        <label>
+                            <input type="checkbox" id="comment-pishi"> 批示
+                        </label>
+                    </div>
+                    <div style="display: none">
                         <textarea id="comment-text" class="form-control"  roww="4"></textarea>
                         <input type="hidden" id="comment-task-id" value="" />
                     </div>
@@ -735,7 +755,7 @@ if ($i == 0) {
 function getCommentOptContent($task_id,$text)
 {
     $str = "<a onclick='og.taskList.viewTaskDetailClick($task_id)'>查看</a>";
-    return $str.="  <a onclick=og.taskList.commentClick($task_id,'$text')>评价</a>" ;
+    return $str.="  <a onclick=\"og.taskList.commentClick($task_id,'". str_replace(PHP_EOL, '', $text)."')\">评价</a>" ;
 }
 
 ?>
