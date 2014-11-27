@@ -27,6 +27,7 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
     DECLARE comment_num INT;
     DECLARE comment_score INT;
     DECLARE base_score INT;
+    DECLARE dead_line datetime;
 
 /* 声明游标
  已经删除
@@ -44,8 +45,8 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
                             tuijian,
                             pishi,
                             comment_xiaoneng_deadline,
-                            comment_fujuzhang_deadline
-                              assigned_to_departid
+                            comment_fujuzhang_deadline,
+                            assigned_to_departid
                           FROM og_project_tasks
                           WHERE deleted != 1 AND light_status = 1 AND comment_status_xiaoneng != -1;
 
@@ -64,13 +65,14 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
     REPEAT
       IF NOT Done
       THEN
-        IF CURRENT_DATE ( ) > DATE(comment_xiaoneng_deadline1)
+        IF CURRENT_TIMESTAMP ()> comment_xiaoneng_deadline1
         THEN
 /*过了评价期，默认中评*/
           IF comment_status_xiaoneng1 = 0
           THEN
+            set dead_line= date_sub(DATE_ADD(CURRENT_DATE(),INTERVAL 30 day),interval 1 SECOND);
             UPDATE og_project_tasks
-            SET comment_status_xiaoneng = 2
+            SET comment_status_xiaoneng = 2,comment_fujuzhang_deadline=dead_line
             WHERE id = id1;
             /** 重新计算分数 */
             CALL  computeTaskScore(id1);
@@ -80,7 +82,7 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
         END IF;
 
 
-        IF CURRENT_DATE ( ) > DATE(comment_fujuzhang_deadline1)
+        IF CURRENT_TIMESTAMP () > comment_fujuzhang_deadline1
         THEN
 /*过了评价期，默认中评*/
           IF comment_status_fujuzhang1 = 0
@@ -95,8 +97,8 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
         END IF;
       END IF;
       FETCH NEXT FROM RS INTO id1, due_date1, completed_on1,
-    comment_status_xiaoneng1,comment_status_fujuzhang1, comment_status_juzhang1,
-    tuijian1, pishi1, comment_xiaoneng_deadline1,comment_fujuzhang_deadline1, assigned_to_departid1;
+      comment_status_xiaoneng1,comment_status_fujuzhang1, comment_status_juzhang1,
+      tuijian1, pishi1, comment_xiaoneng_deadline1,comment_fujuzhang_deadline1, assigned_to_departid1;
 
     UNTIL Done END REPEAT;
 
@@ -104,4 +106,3 @@ CREATE PROCEDURE deadlineCommentAutoAdd()
     CLOSE rs;
   END //
     delimiter ;
-call deadlineCommentAutoAdd();

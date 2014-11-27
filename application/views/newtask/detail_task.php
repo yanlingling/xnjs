@@ -71,10 +71,11 @@ $item = $taskDetail;
             <div class="col-sm-3">
                 <p class="form-control-static" >
                     <?php echo getCommentValue($item['comment_status_juzhang'])?>
+                    <strong><?php echo $item['pishi_juzhang']? '批示':'' ;?></strong>
                 </p>
             </div>
         </div>
-    <div class="form-group" style="display: none">
+    <div class="form-group <?php echo $item['pishi_juzhang']? '':'hide' ;?>">
         <div  class="col-sm-2">&nbsp;</div>
         <div class="col-sm-10">
             <textarea class="form-control-static" readonly="readonly">
@@ -92,7 +93,7 @@ $item = $taskDetail;
             </div>
         </div>
 
-        <div class="form-group" style="display: none">
+        <div class="form-group <?php echo $item['pishi']? '':'hide' ;?>" >
             <div  class="col-sm-2">&nbsp;</div>
             <div class="col-sm-10">
                 <textarea class="form-control-static" readonly="readonly">
@@ -111,7 +112,7 @@ $item = $taskDetail;
                 </p>
             </div>
         </div>
-        <div class="form-group" style="display: none">
+        <div class="form-group <?php echo $item['tuijian']? '':'hide' ;?>" >
             <div  class="col-sm-2">&nbsp;</div>
             <div class="col-sm-10">
                 <textarea class="form-control-static" readonly="readonly">

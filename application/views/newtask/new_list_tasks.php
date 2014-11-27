@@ -62,14 +62,16 @@ foreach ($departInfo as $item) {
 
                 <td>进行中岗位职责</td>
                 <td>已完成岗位职责</td>
-                <td>科室得分</td>
+                <td style="display: none">科室得分</td>
+                <td>效能考核得分</td>
             </tr>
             <tr>
                 <td id="light-count-4" class="num">0</td>
                 <td id="light-count-3" class="num">0</td>
                 <td id="light-count-2" class="num">0</td>
                 <td id="light-count-1" class="num">0</td>
-                <td id="depart-score" class="num"></td>
+                <td id="depart-score" class="num" style="display: none"></td>
+                <td id="xiaoneng-score" class="num"></td>
             </tr>
 
         </table>
@@ -701,6 +703,7 @@ if ($i == 0) {
                 <form role="form">
                     <div class="form-group">
                         <label >执法任务：</label>
+                        <input type="hidden" id="comment-task-id">
                         <label id="comment-task-name"></label>
                     </div>
                     <div class="form-group">
@@ -720,14 +723,16 @@ if ($i == 0) {
                             <input type="checkbox" id="comment-tuijian"> 推荐
                         </label>
                     </div>
-                    <div class="checkbox <?php if (logged_user()->getUserRole() != '副局长') {echo 'hide';} ?>">
+                    <div class=" <?php if (!($depart_name='效能办' && $isSelf=='self')) {echo 'hide';} ?>">
+                        <textarea id="comment-text-tuijian" class="form-control"  roww="4"></textarea>
+                    </div>
+                    <div class="checkbox <?php if (logged_user()->getUserRole() != '副局长' && logged_user()->getUserRole() != '局长') {echo 'hide';} ?>">
                         <label>
                             <input type="checkbox" id="comment-pishi"> 批示
                         </label>
                     </div>
-                    <div style="display: none">
-                        <textarea id="comment-text" class="form-control"  roww="4"></textarea>
-                        <input type="hidden" id="comment-task-id" value="" />
+                    <div class="<?php if (logged_user()->getUserRole() != '副局长' && logged_user()->getUserRole() != '局长') {echo 'hide';} ?>">
+                        <textarea id="comment-text-pishi" class="form-control"  roww="4"></textarea>
                     </div>
                     <div class="form-group" >
                         <div class="col-sm-4">
@@ -766,6 +771,7 @@ function getCommentOptContent($task_id,$text)
         var redLightCount = 0;
         var yellowLightCount = 0;
         var baseScore = departOverviewData[0].score || 100;
+        var xiaonengScore = departOverviewData[0].xiaoneng_score || '100';
         for (var i = 0, item; item = departOverviewData[i++];) {
             var status = item['light_status'];
             if (status == '4') {
@@ -777,6 +783,7 @@ function getCommentOptContent($task_id,$text)
             $('#light-count-' + status).html(item['light_count']);
         }
         $('#depart-score').html(baseScore);
+        $('#xiaoneng-score').html(xiaonengScore);
     }
     renderBulletin();
     // 用户点击过tab的切换，按用户点击的来

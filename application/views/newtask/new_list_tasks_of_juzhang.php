@@ -27,8 +27,8 @@ require_javascript('og/cookie.js');
                 <tr>
                     <td style="width: 100px">科室名称</td>
                     <td style="width: 100px">效能状态</td>
-                    <td style="width: 100px">效能考核</td>
-                    <td style="width: 200px" class="<?php echo logged_user()->getUserRole()=='局长'?'':'hide'?>">操作</td>
+                    <td style="width: 100px">科室得分</td>
+                    <td style="width: 200px">操作</td>
 
                 </tr>
             </table>

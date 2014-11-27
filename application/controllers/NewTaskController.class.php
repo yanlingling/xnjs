@@ -125,7 +125,8 @@ AND x.depart_id = y.depart_id ";
 
         // 查询岗位职责状态的汇总情况
         DB::beginWork();
-        $sql = "SELECT y.depart_name AS name,  `light_status` , COUNT(  `light_status` ) AS light_count, y.score
+        $sql = "SELECT y.depart_name AS name,  `light_status` , COUNT(  `light_status` ) AS light_count, y.score,
+            y.xiaoneng_score
             FROM  `og_project_tasks` AS x,  `og_department` AS y
             WHERE  `assigned_to_departid` =$depart_id AND y.depart_id =$depart_id  and x.deleted = !1
             GROUP BY light_status
@@ -293,6 +294,7 @@ AND x.depart_id = y.depart_id ";
             x.comment_status_fujuzhang,
             x.tuijian,
             x.pishi,
+            x.pishi_juzhang,
             x.comment_status_xiaoneng
             FROM og_project_tasks AS x, og_users AS z, og_department AS y
             WHERE x.assigned_to_departid = y.depart_id
@@ -440,7 +442,7 @@ AND x.depart_id = y.depart_id ";
         $sql .= " where id=" . $id;
         $rows = DB::executeAll($sql);
         // 计算任务基本得分
-        updateTaskScore($id);
+        $this->updateTaskScore($id);
         DB::commit();
         ajx_current("empty");
     }
@@ -529,25 +531,29 @@ AND x.depart_id = y.depart_id ";
         }
         ajx_current("empty");
         $taskId = $_POST['taskId'];
-        $comment = $_POST['comment'];
+        $tuijianReason = $_POST['tuijianReason'];
+        $pishiReason = $_POST['pishiReason'];
         $status = $_POST['status'];
         $role = logged_user()->getUserRole();
         DB::beginWork();
         $nowDate = date('Y-m-d', time());
         if ($role == '局长') {
             //更新状态
-            $sql = "UPDATE `og_project_tasks` SET `comment_juzhang`='" . $comment . "' , `comment_status_juzhang`=" . $status . " WHERE id=" . $taskId;
+            $sql = "UPDATE `og_project_tasks` SET
+ `comment_juzhang`='" . $pishiReason. "' ,
+ `pishi_juzhang`='" . $_POST['pishi'] . "'  ,
+  `comment_status_juzhang`=" . $status . " WHERE id=" . $taskId;
         } else if ($role == '副局长') {
             //更新状态
             $sql = "UPDATE `og_project_tasks` SET
-`comment_fujuzhang`='" . $comment . "'  ,
+`comment_fujuzhang`='" . $pishiReason. "'  ,
 `pishi`='" . $_POST['pishi'] . "'  ,
  `comment_status_fujuzhang`=" . $status . "
   WHERE id=" . $taskId;
         } else {
             //更新状态
             $sql = "UPDATE `og_project_tasks` SET
-`comment_xiaoneng`='" . $comment . "' ,
+`comment_xiaoneng`='" . $tuijianReason. "' ,
  `comment_status_xiaoneng`=" . $status . ",
  comment_fujuzhang_deadline='" . date("Y-m-d H:i:s", strtotime("$nowDate +30   day") - 1) . "',
  `tuijian`=" . $_POST['tuijian']. "
@@ -555,7 +561,7 @@ AND x.depart_id = y.depart_id ";
         }
         DB::execute($sql);
         // 计算任务基本得分
-        updateTaskScore($taskId);
+        $this->updateTaskScore($taskId);
         DB::commit();
         ajx_current("empty");
     }
@@ -567,12 +573,12 @@ AND x.depart_id = y.depart_id ";
     function updateTaskScore ($taskId) {
         $sql = " select  assigned_to_departid from  og_project_tasks where id=".$taskId;
         DB::beginWork();
-        $row=DB::execute($sql);
+        $row = DB::executeAll($sql);
         $item = $row[0];
         $sql = " call computeTaskScore($taskId)";
-        DB::execute($sql);
+        DB::executeOne($sql);
         $sql = " call computeDepartScore(".$item['assigned_to_departid'].")";
-        DB::execute($sql);
+        DB::executeOne($sql);
     }
 
 

@@ -94,11 +94,6 @@ BEGIN
   if task_num!=0 THEN
   set avg_score=(pishi_num+tuijian_num*0.5)+(comment_score/task_num) ;
   end if;
-  select comment_score;
-  select avg_score;
-   select task_num;
-   select pishi_num;
-   select tuijian_num;
   update og_department set xiaoneng_score=avg_score where depart_id=departid;
 END //
 delimiter ;

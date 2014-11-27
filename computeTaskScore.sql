@@ -93,16 +93,12 @@ BEGIN
             END IF;
             set score=0;
             if comment_num =0 THEN
-            set score = base_score;
+            /**都没有评价过  平均分按50计算**/
+            set score = base_score + 50;
             else
             set score = base_score + (comment_score / comment_num);
             end if;
             UPDATE og_project_tasks SET xiaoneng_score = score  WHERE id = id1;
-            select base_score;
-            select comment_score;
-            select comment_num;
-            select 'base_score + (comment_score / comment_num)';
-            select score;
     END IF;
     FETCH NEXT FROM RS INTO id1, due_date1, completed_on1,
     comment_status_xiaoneng1,comment_status_fujuzhang1, comment_status_juzhang1,
@@ -113,4 +109,3 @@ BEGIN
   CLOSE rs;
 END //
 delimiter ;
-call computeTaskScore(131);
