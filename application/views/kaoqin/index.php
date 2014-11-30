@@ -121,13 +121,14 @@ $genid = gen_id();
                     <td class="duty-d3"><?php echo $item['create_time']; ?>
                     <td class='duty-d4'><?php echo $item['username']; ?></td>
                     <td class='duty-d5'><?php
+                        $str="<a onclick='og.jilvjiancha.viewJilvjiancha(" . $item['id'] . ")'>查看</a>";
                         if ($canManageJilvjiancha) {
-                            echo "<a onclick='og.jilvjiancha.viewJilvjiancha(" . $item['id'] . ")'>查看</a>";
-                            echo "&nbsp;&nbsp;<a onclick='og.jilvjiancha.del(" . $item['id'] . ")'>删除</a>";
+                            $str.="&nbsp;&nbsp;<a onclick='og.jilvjiancha.del(" . $item['id'] . ")'>删除</a>";
                             //echo "<a onclick='og.jilvjiancha.writeJilvjiancha(1," . $item['id'] . ")'>编辑</a>";
-                        } else {
-                            echo "<a onclick='og.jilvjiancha.viewJilvjiancha(" . $item['id'] . ")'>查看</a>";
+                        } else if (logged_user()->getUserRole() == '局长') {
+                            $str.="&nbsp;&nbsp;<a onclick='og.jilvjiancha.editJilvjiancha(" . $item['id'] . ")'>编辑</a>";
                         }
+                        echo $str;
                         ?></td>
                     </tr>
                 </table>
@@ -182,3 +183,4 @@ function getKaoqinOpt($id, $canManage)
         showSubTab(ele);
     });
 </script>
+
