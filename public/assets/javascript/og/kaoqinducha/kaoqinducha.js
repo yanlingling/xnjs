@@ -113,6 +113,10 @@ og.jilvjiancha = {
         var url = og.getUrl('kaoqin', 'write_jilvjiancha', {opt: 'view', id: id});
         og.openLink(url, {post: {}});
     },
+    editJilvjiancha: function (id) {
+        var url = og.getUrl('kaoqin', 'write_jilvjiancha', {opt: 'edit', id: id});
+        og.openLink(url, {post: {}});
+    },
     saveClickHandler: function (type, id) {
         var params = {};
         var opt = type || 'add';
@@ -212,3 +216,4 @@ og.jilvjiancha = {
         $('#error-tip').removeClass('hide');
     }
 };
+

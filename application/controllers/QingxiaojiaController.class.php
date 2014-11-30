@@ -159,6 +159,11 @@ class QingxiaojiaController extends ApplicationController
         }
         // $userRole = logged_user()->getUserRole();
         DB::commit();
+        $tab = 'my';
+        if (isset($_GET['tab'])) {
+            $tab = $_GET['tab'];
+        }
+        tpl_assign('tab', $tab);
 
     }
 

@@ -195,12 +195,17 @@ require_javascript("og/jquery.min.js");
         var tipTaskCount = <?php echo $taskCount;?>;
         var tipCarCount = <?php echo $carApplyCount;?>;
         var tipOnDuty= <?php echo $is_on_duty;?>;
+        var toCommentCount= <?php echo $toCommentCount;?>;
         var htmlStr = '';
         if (tipTaskCount != 0) {
             htmlStr += '<p onclick=og.dashboard.go("task")>您有<span class="red">' + tipTaskCount + '</span>个即将到期的岗位职责</p>';
         }
+        if (toCommentCount!= 0) {
+            htmlStr += '<p onclick=og.dashboard.go("comment")>您有<span class="red">' +toCommentCount + '</span>个待评价的岗位职责</p>';
+        }
+
         if (tipCarCount != 0) {
-            htmlStr += '<p onclick=og.dashboard.go("task")>您有<span class="red">' + tipCarCount + '</span>条未处理的用车申请</p>';
+            htmlStr += '<p onclick=og.dashboard.go("car")>您有<span class="red">' + tipCarCount + '</span>条未处理的用车申请</p>';
         }
         if (tipHolidayApplyCount != 0) {
             htmlStr += '<p onclick=og.dashboard.go("qingxiaojia")>您有<span class="red">' + tipHolidayApplyCount + '</span>条未处理的请假申请</p>';
@@ -218,7 +223,7 @@ require_javascript("og/jquery.min.js");
             htmlStr += '<p onclick=og.dashboard.go("risk")>您有<span class="red">' + tipRiskCount + '</span>个即将到期的风险点自查自控</p>';
         }
         if (tipOnDuty == 1) {
-            htmlStr += '<p onclick=og.dashboard.go("risk")>您是今天的值班长，请及时填写值班长日志</p>';
+            htmlStr += '<p onclick=og.dashboard.go("duty")>您是今天的值班长，请及时填写值班长日志</p>';
         }
 
         if (htmlStr != '') {
@@ -231,21 +236,39 @@ require_javascript("og/jquery.min.js");
     })()
     og.dashboard={};
     og.dashboard.go = function (des){
-        return;
         var url='';
          switch (des){
+             case 'task':
+                 url = og.getUrl('newtask', 'new_list_tasks');
+                 break;
+             case 'comment':
+                 if (og.loggedUser.userRole == '科长') {
+                     url = og.getUrl('newtask', 'new_list_tasks',{'tab': 'comment'});
+                 } else {
+                     url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');
+                 }
+                 break;
+             case 'car':
+                 url = og.getUrl('carmanage', 'index');
+                 break;
              case 'qingxiaojia':
-                 url =  og.getUrl('qingxiaojia', 'index');;
+                 url =  og.getUrl('qingxiaojia', 'index',{'tab': 'handle'});;
               break;
              case 'taskDelay':
                 url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');;
              break;
+             case 'file':
+                 url = og.getUrl('file', 'index');;
+                 break;
              case 'learning':
                  url = og.getUrl('lianzhengxuexi', 'index')
              break;
              case 'risk':
                  url = og.getUrl('fengxiandian', 'index')
              break;
+             case 'duty':
+                 url = og.getUrl('zhibanzhang', 'index')
+                 break;
          }
         og.openLink(url, {});
     }

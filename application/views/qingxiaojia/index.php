@@ -9,27 +9,27 @@ $genid = gen_id();
     <div>
         <div class="sub-tab">
         <span id='my-apply-tab'
-              class="sub-tab-content"><?php //echo $departName; ?>
+              class="<?php echo $tab == 'my' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>
             我的申请
         </span>
 
             <div
                 class="<?php echo ($userRole == '局长' || $userRole == '副局长' || $userRole == '科长') ? 'inline' : 'hide'; ?>">
 
-             <span id='to-handle-tab'>
+             <span class="<?php echo $tab == 'handle' ? 'sub-tab-content' : ''; ?>" id='to-handle-tab'>
              待处理申请
             </span>
             </div>
             <div  class="<?php echo $canViewAllHolidayApply ? 'inline' : 'hide'; ?>">
 
-             <span id='all-holiday-tab'>
+             <span  class="<?php echo $tab == 'all' ? 'sub-tab-content' : ''; ?>" id='all-holiday-tab'>
              所有申请
             </span>
 
             </div>
             <div  class="<?php echo $canViewAllHolidayApply ? 'inline' : 'hide'; ?>">
 
-             <span id='tongji-holiday-tab'>
+             <span class="<?php echo $tab == 'data' ? 'sub-tab-content' : ''; ?>" id='tongji-holiday-tab'>
                  数据统计
             </span>
 
@@ -40,7 +40,7 @@ $genid = gen_id();
     </div>
     <div class="new-button" style="margin-left: 10px" onclick="og.holiday.create()">创建申请</div>
     <!---我的申请-->
-    <div id="my-apply-content">
+    <div id="my-apply-content" class="<?php echo $tab == 'my' ? '' : 'hide'; ?>">
         <div class="content-wraper">
 
             <div class="table-header">
@@ -102,7 +102,7 @@ $genid = gen_id();
     <!---end我的申请-->
 
     <!---待处理的申请-->
-    <div id="to-handle-content" class="hide">
+    <div id="to-handle-content"  class="<?php echo $tab == 'handle' ? '' : 'hide'; ?>">
         <div class="content-wraper">
 
             <div class="table-header">
@@ -169,7 +169,7 @@ $genid = gen_id();
     <!---end待处理的申请-->
 
     <!--begin所有申请-->
-    <div id="all-holiday-content" class="hide">
+    <div id="all-holiday-content"  class="<?php echo $tab == 'all' ? '' : 'hide'; ?>">
         <div class="content-wraper">
 
             <div class="table-header">
@@ -260,7 +260,7 @@ $genid = gen_id();
     </div>
     <!--end所有申请-->
     <!--begin数据统计-->
-    <div id="tongji-holiday-content" class="hide">
+    <div id="tongji-holiday-content"  class="<?php echo $tab == 'data' ? '' : 'hide'; ?>">
         <div class="content-wraper">
 
             <div class="table-header">

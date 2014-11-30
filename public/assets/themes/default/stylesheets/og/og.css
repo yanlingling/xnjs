@@ -1939,3 +1939,6 @@ select.select_milestone, select.select_task_list, select.select_message {
 .form-horizontal textarea{
     height: 80px;
 }
+#message-content p {
+    cursor: pointer;
+}

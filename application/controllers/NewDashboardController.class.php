@@ -54,6 +54,36 @@ class NewDashboardController extends ApplicationController {
             tpl_assign('taskDelayApplyCount', 0);
         }
 
+        //查询待评价的岗位职责
+        if (logged_user()->getUserRole() == '局长'){
+            $sql = "select count(*)  as count from og_project_tasks as x
+where x.comment_status_xiaoneng!=0
+and x.comment_status_xiaoneng!=-1
+and x.comment_status_fujuzhang!=0
+ and x.comment_status_juzhang=0" ;
+            DB::beginWork();
+            $rows = DB::executeAll($sql);
+            tpl_assign('toCommentCount', $rows[0]['count']);
+        }
+        else if (logged_user()->getUserRole() == '副局长'){
+            $sql = "select count(*)  as count from og_project_tasks as x
+where x.comment_status_xiaoneng!=0
+and x.comment_status_xiaoneng!=-1
+and x.comment_status_fujuzhang=0" ;
+            DB::beginWork();
+            $rows = DB::executeAll($sql);
+            tpl_assign('toCommentCount', $rows[0]['count']);
+        }
+        else if (logged_user()->getUserRole() == '科长'){
+            $sql = "select count(*)  as count from og_project_tasks as x
+where x.comment_status_xiaoneng=0 " ;
+            DB::beginWork();
+            $rows = DB::executeAll($sql);
+            tpl_assign('toCommentCount', $rows[0]['count']);
+        }
+        else {
+            tpl_assign('toCommentCount', 0);
+        }
         // 查询最近一周到期的学习任务
          $sql = "SELECT count(*) as count
             FROM  `og_learning` AS y

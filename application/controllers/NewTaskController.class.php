@@ -101,8 +101,6 @@ AND x.depart_id = y.depart_id ";
                 $sql .= " and comment_status_fujuzhang=0
                 and comment_status_xiaoneng!=0
                  and x.assigned_to_departid =$depart_id";
-                // and z.id=" . logged_user()->getId();
-                //and FIND_IN_SET(z.id, y.fujuzhang_id) !=0
             } else if (logged_user()->getUserRole() == '局长') {
                 $sql .= " and comment_status_juzhang=0
                 and comment_status_fujuzhang!=0
