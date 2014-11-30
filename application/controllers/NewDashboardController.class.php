@@ -37,6 +37,15 @@ class NewDashboardController extends ApplicationController {
             ajx_current("empty");
             return;
         }
+        $sql = "SELECT y.depart_id,y.depart_name,y.manager_id
+            FROM " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
+            WHERE y.depart_id = z.depart_id
+            AND z.id =" . logged_user()->getId();
+        $rows1 = DB::executeAll($sql);
+        $depart_id = $rows1[0]['depart_id'];
+        $depart_name= $rows1[0]['depart_name'];
+        tpl_assign('depart_name', $depart_name);
+        tpl_assign('depart_id', $depart_id);
         // 查询当前的要处理的请假申请
         $sql = "select count(*) as count from og_holiday_apply as x where x.current_handler=" . logged_user()->getId().
             " and (apply_status = 2 or apply_status = 3 or apply_status = 4)";// 任务处于待审批的状态
@@ -60,6 +69,7 @@ class NewDashboardController extends ApplicationController {
 where x.comment_status_xiaoneng!=0
 and x.comment_status_xiaoneng!=-1
 and x.comment_status_fujuzhang!=0
+and x.light_status=1
  and x.comment_status_juzhang=0" ;
             DB::beginWork();
             $rows = DB::executeAll($sql);
@@ -69,6 +79,7 @@ and x.comment_status_fujuzhang!=0
             $sql = "select count(*)  as count from og_project_tasks as x
 where x.comment_status_xiaoneng!=0
 and x.comment_status_xiaoneng!=-1
+and x.light_status=1
 and x.comment_status_fujuzhang=0" ;
             DB::beginWork();
             $rows = DB::executeAll($sql);
@@ -76,7 +87,9 @@ and x.comment_status_fujuzhang=0" ;
         }
         else if (logged_user()->getUserRole() == '科长'){
             $sql = "select count(*)  as count from og_project_tasks as x
-where x.comment_status_xiaoneng=0 " ;
+where x.comment_status_xiaoneng=0
+and x.light_status=1
+" ;
             DB::beginWork();
             $rows = DB::executeAll($sql);
             tpl_assign('toCommentCount', $rows[0]['count']);

@@ -145,7 +145,7 @@ Ext.onReady(function () {
                 data: og.getUrl('fengxiandian', 'index')
             }
         }),
-        og.panels.yigangshuangze = new og.ContentPanel({
+/*        og.panels.yigangshuangze = new og.ContentPanel({
             title: '一岗双责责任书',
             id: 'yigangshuangze-panel',
             iconCls: 'ico-reporting-layout',
@@ -165,7 +165,7 @@ Ext.onReady(function () {
                 type: 'url',
                 data: og.getUrl('wushu', 'index')
             }
-        }),
+        }),*/
         og.panels.dianzixiaoneng = new og.ContentPanel({
             title: '电子效能监察',
             id: 'dianzixiaoneng-panel',

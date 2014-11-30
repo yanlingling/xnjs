@@ -100,10 +100,12 @@ AND x.depart_id = y.depart_id ";
             } else if (logged_user()->getUserRole() == '副局长') { // 副局长等效能办评完了才能评
                 $sql .= " and comment_status_fujuzhang=0
                 and comment_status_xiaoneng!=0
-                 and x.assigned_to_departid =$depart_id";
+                and comment_status_xiaoneng!=-1
+                 and x.assigned_to_departid =$depart_id"; //-1为不用评价的任务
             } else if (logged_user()->getUserRole() == '局长') {
                 $sql .= " and comment_status_juzhang=0
                 and comment_status_fujuzhang!=0
+                and comment_status_xiaoneng!=-1
                 and x.assigned_to_departid =$depart_id";
             }
             $sql .= " order by x.completed_on DESC";

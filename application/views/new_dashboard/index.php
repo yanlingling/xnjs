@@ -3,6 +3,8 @@ require_javascript("og/jquery.min.js");
 ?>
 <script>
     og.index = og.index || {};
+    eval("og.loggedUser.departName='<?php echo $depart_name;?>'");
+    eval("og.loggedUser.departid=<?php echo $depart_id;?>");
     og.index.showTaskModule = function (val) {
         if (panel = Ext.get('tabs-panel__mails-panel')) panel.setDisplayed(val);
         if (panel = Ext.get('tabs-panel__documents-panel')) panel.setDisplayed(val);
@@ -11,9 +13,15 @@ require_javascript("og/jquery.min.js");
     og.index.showLianzhengModule = function (val) {
         if (panel = Ext.get('tabs-panel__lianzhengxuexi-panel')) panel.setDisplayed(val);
         if (panel = Ext.get('tabs-panel__fengxiandian-panel')) panel.setDisplayed(val);
-        if (panel = Ext.get('tabs-panel__yigangshuangze-panel')) panel.setDisplayed(val);
-        if (panel = Ext.get('tabs-panel__wushu-panel')) panel.setDisplayed(val);
+/*        if (panel = Ext.get('tabs-panel__yigangshuangze-panel')) panel.setDisplayed(val);
+        if (panel = Ext.get('tabs-panel__wushu-panel')) panel.setDisplayed(val);*/
         if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(val);
+        // 只有药械2科和流通科 有电子效能
+/*        if (og.loggedUser.departid == 4 || og.loggedUser.departid == 5 ||og.loggedUser.departid == 6) {
+            if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(val);
+        } else {
+            if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(false);
+        }*/
     }
     og.index.showReportModule = function (val) {
         if (panel = Ext.get('tabs-panel__report-panel')) panel.setDisplayed(val);
