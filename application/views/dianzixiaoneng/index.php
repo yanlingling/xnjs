@@ -13,13 +13,14 @@ $genid = gen_id();
 <div>
     <div>
         <div class="sub-tab">
-        <span id='xuke-sub-link'
-              class="<?php echo $tab == 'xuke' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>许可受理</span>
-            <span id='yanshou-sub-link' class="<?php echo $tab == 'yanshou' ? 'sub-tab-content' : ''; ?>">验收材料受理</span>
+        <span id='xuke-sub-link' class="<?php echo $tab == 'xuke' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>许可受理</span>
+            <span id='yanshou-sub-link' class="<?php echo $tab == 'yanshou' ? 'sub-tab-content' : ''; ?>">许可验收</span>
+            <span id='fazheng-sub-link' class="<?php echo $tab == 'fazheng' ? 'sub-tab-content' : ''; ?>">shenpifazheng</span>
         </div>
         <div class="clearFloat"></div>
     </div>
     <?php
-    include('xukeList.php');
+    include('xukeshouli.php');
+    include('yanshou.php');
     ?>
 </div>

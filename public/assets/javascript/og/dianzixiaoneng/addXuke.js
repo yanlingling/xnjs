@@ -74,10 +74,11 @@ og.addXuke = {
         var now = new Date();
         var nowYear = now.getFullYear();
         var nowMonth = now.getMonth()+1;
-        var nowDate = now.getDate();
+        var nowDate = ''+now.getDate();
+        if (nowDate.length == 1) {
+            nowDate = '0'+nowDate;
+        }
         var nowDate = nowYear + '-' + nowMonth + '-' + nowDate;
-
-
         if (new Date(nowDate).getTime() < new Date($.trim(params.date)).getTime()) {
             return '申请时间必须早于当前时间';
         }
