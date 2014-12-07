@@ -13,14 +13,49 @@ $genid = gen_id();
 <div>
     <div>
         <div class="sub-tab">
-        <span id='xuke-sub-link' class="<?php echo $tab == 'xuke' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>许可受理</span>
+            <span id='xuke-sub-link'
+                  class="<?php echo $tab == 'xuke' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>许可受理</span>
             <span id='yanshou-sub-link' class="<?php echo $tab == 'yanshou' ? 'sub-tab-content' : ''; ?>">许可验收</span>
-            <span id='fazheng-sub-link' class="<?php echo $tab == 'fazheng' ? 'sub-tab-content' : ''; ?>">shenpifazheng</span>
+            <span id='fazheng-sub-link' class="<?php echo $tab == 'fazheng' ? 'sub-tab-content' : ''; ?>">审批发证</span>
+            <span id='all-sub-link' class="<?php echo $tab == 'all' ? 'sub-tab-content' : ''; ?>">所有许可</span>
         </div>
         <div class="clearFloat"></div>
     </div>
     <?php
     include('xukeshouli.php');
-    include('yanshou.php');
+    include('xukeyanshou.php');
+    include('xukefazheng.php');
+    include('allxuke.php');
+    include('handleModal.php');
     ?>
 </div>
+<script>
+
+    // 用户点击过tab的切换，按用户点击的来
+    if (typeof og.dianzixiaonengSubTab != 'undefined') {
+        showSubTab($('#' + og.dianzixiaonengSubTab));
+    }
+
+    function showSubTab(ele) {
+        $('.sub-tab span').removeClass('sub-tab-content');
+        ele.addClass('sub-tab-content');
+        $('#xukeTabContent').addClass('hide');
+        $('#yanshouTabContent').addClass('hide');
+        $('#allTabContent').addClass('hide');
+        $('#fazhengTabContent').addClass('hide');
+        if (ele.html() == '许可受理') {
+            $('#xukeTabContent').removeClass('hide');
+        } else if (ele.html() == '所有许可') {
+            $('#allTabContent').removeClass('hide');
+        } else if (ele.html() == '许可验收') {
+            $('#yanshouTabContent').removeClass('hide');
+        } else if (ele.html() == '审批发证') {
+            $('#fazhengTabContent').removeClass('hide');
+        }
+    }
+    $('.sub-tab span').click(function () {
+        var ele = $(this);
+        og.dianzixiaonengSubTab = ele.attr('id');
+        showSubTab(ele);
+    });
+</script>

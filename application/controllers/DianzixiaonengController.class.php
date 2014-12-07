@@ -35,6 +35,15 @@ class DianzixiaonengController extends ApplicationController
         DB::commit();
         $this->depart_id = $rows1[0]['depart_id'];
         $this->depart_name = $rows1[0]['depart_name'];
+        $this->SHOULI_TIAOJIANSHENHE = 1;
+        $this->SHOULI_XIANCHANGZHIDAO = 2;
+        $this->SHOULI_XIANCHANGZHIDAO_TONGZHI = 3;
+
+        $this->YANSHOU_CHOUBEIQI = 4;
+        $this->YANSHOU_ZILIAOSHENHE = 5;
+        $this->YANSHOU_ZILIAOLIUZHUAN = 6;
+        $this->YANSHOU_XIANCHANGJIANCHA = 7;
+        $this->FAZHENG_GONGSHIFAZHENG= 9;
     } // __construct
 
     /**
@@ -57,50 +66,155 @@ class DianzixiaonengController extends ApplicationController
             $tab = $_GET['tab'];
         }
         tpl_assign('tab', $tab);
+        DB::beginWork();
+        $sql = 'select * from og_dianzixiaoneng';
+        $rows = DB::executeAll($sql);
+        tpl_assign('allxukeList', $rows);
         $baseSql = 'select x.id,x.`apply_name`,x.`apply_time`,
 y.sub_process,y.create_time,y.dead_time,
-y.complete_time,y.result, y.id as task_id
+y.complete_time,y.result, y.id as task_id,y.light_status
 from og_dianzixiaoneng as x,og_dianzixiaoneng_task as y
-where x.id=y.apply_id';
+where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒绝了得申请，3代码申请还没被处理
         if ($this->depart_name == '药械二科') {
-            $sql = $baseSql.' and y.sub_process=1';
-            DB::beginWork();
+            $sql = $baseSql . ' and (y.sub_process=1 or y.sub_process=4)';
             $rows = DB::executeAll($sql);
             tpl_assign('xukeshouliList', $rows);
             // 验收
-            $sql = $baseSql.' and (y.sub_process=5 or y.sub_process=6)';
-            DB::beginWork();
+            $sql = $baseSql . ' and (y.sub_process=5 or y.sub_process=6)';
             $rows = DB::executeAll($sql);
             tpl_assign('yanshouList', $rows);
             //发证
-            $sql = $baseSql.' and (y.sub_process=7 or y.sub_process=8)';
-            DB::beginWork();
+            $sql = $baseSql . ' and (y.sub_process=9 or y.sub_process=8)';
             $rows = DB::executeAll($sql);
             tpl_assign('fazhengList', $rows);
         } else {
-            $sql = $baseSql.' and (y.sub_process=2 or y.sub_process=3)';
+            $sql = $baseSql . ' and (y.sub_process=2 or y.sub_process=3)';
             if ($this->depart_name == '流通监管一科') {
-               $sql.=' and x.apply_area =0';
-            } else if ($this->depart_name == '流通监管二科'){
-                $sql.=' and x.apply_area =1';
+                $sql .= ' and x.apply_area =0';
+            } else if ($this->depart_name == '流通监管二科') {
+                $sql .= ' and x.apply_area =1';
             }
-            DB::beginWork();
             $rows = DB::executeAll($sql);
             tpl_assign('xukeshouliList', $rows);
             // 验收阶段
-            $sql = $baseSql.' and (y.sub_process=9)';
+            $sql = $baseSql . ' and (y.sub_process=7)';
             if ($this->depart_name == '流通监管一科') {
-                $sql.=' and x.apply_area =0';
-            } else if ($this->depart_name == '流通监管二科'){
-                $sql.=' and x.apply_area =1';
+                $sql .= ' and x.apply_area =0';
+            } else if ($this->depart_name == '流通监管二科') {
+                $sql .= ' and x.apply_area =1';
             }
-            DB::beginWork();
             $rows = DB::executeAll($sql);
             tpl_assign('yanshouList', $rows);
         }
 
     }
 
+    function del_xuke()
+    {
+
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        DB::beginWork();
+        $id = $_GET['id'];
+        $sql = 'delete from og_dianzixiaoneng where id=' . $id;
+        DB::executeAll($sql);
+        $sql = 'delete from og_dianzixiaoneng_task where apply_id=' . $id;
+        DB::executeAll($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
+
+    /**
+     * to test
+     * @throws Exception
+     */
+    function view_xuke()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        DB::beginWork();
+        $id = $_GET['id'];
+        $sql = 'select * from og_dianzixiaoneng where id=' . $id;
+        $rows = DB::executeAll($sql);
+        tpl_assign('xukeInfo', $rows [0]);
+        $sql = 'select * from og_dianzixiaoneng_task where apply_id=' . $id . ' order by sub_process asc;';
+        $rows = DB::executeAll($sql);
+        tpl_assign('handleInfo', $rows);
+    }
+
+    //totest
+    function handle_task()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        tpl_assign('taskid', $_GET['taskid']);
+        ajx_current("empty");
+    }
+
+    //to test
+    function handle_task_result()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        $taskid = $_POST['taskid'];
+        $xukeid = $_POST['xukeid'];
+        $sub_process = $_POST['sub_process'];
+        $res = $_POST['result'];
+        $detail = addslashes($_POST['detail']);
+        $sql = "update og_dianzixiaoneng_task
+                set
+                result='$res',
+                result_detail='$detail',
+                complete_time=now(),
+                light_status=1
+                where id=$taskid";
+        DB::beginWork();
+        $rows = DB::executeAll($sql);
+        // 被拒绝
+        if ($res == 0) {
+            $sql = "update og_dianzixiaoneng set process=0  where id=$xukeid";
+            DB::executeAll($sql);
+        } else {
+            if ($sub_process == $this->SHOULI_XIANCHANGZHIDAO_TONGZHI) {
+                $sql = "update og_dianzixiaoneng set process=2  where id=$xukeid";
+            }
+            else if ($sub_process == $this->YANSHOU_CHOUBEIQI) {
+                $sql = "update og_dianzixiaoneng set process=3  where id=$xukeid";
+            }
+            else if ($sub_process == $this->YANSHOU_XIANCHANGJIANCHA) {
+                // 进入公示发证
+                $sql = "update og_dianzixiaoneng set process=4  where id=$xukeid";
+            }
+            else if ($sub_process == $this->FAZHENG_GONGSHIFAZHENG) {
+                // 进入公示发证
+                $sql = "update og_dianzixiaoneng set process=6  where id=$xukeid";
+            }
+            DB::executeAll($sql);
+            // 生成下一个任务
+            $next = $this->getNextSubProcess($sub_process);
+            if ($next!= 0) {
+                $dead_time=$this->getDeadTime($next);
+                $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (".$next."," . $xukeid . ",now(),'" . $dead_time . "');";
+                DB::executeAll($sql);
+            }
+        }
+        DB::beginWork();
+        DB::commit();
+        ajx_current("empty");
+    }
     function  add_xuke()
     {
         if (logged_user()->isGuest()) {
@@ -117,22 +231,32 @@ where x.id=y.apply_id';
            `apply_name`,`apply_area`,  `apply_time`, `apply_type`, `apply_detail`,
            `create_time`,process) VALUES (" . $id . ",
            '" . $_POST['name'] . "', '" . $_POST['area'] . "','" . date("Y-m-d H:i:s", strtotime("$apply_date +1   day") - 1) . "',
-           '" . $_POST['type'] . "','" . $_POST['detail'] . "',now(),1);";
+           '" . $_POST['type'] . "','" . addslashes($_POST['detail']) . "',now(),1);";
             DB::beginWork();
             $rows = DB::executeAll($sql);
-            $today = date('Y-m-d', time());
-            // 创建相应的待办事项 条件审核
-            $dead_time = $this->getDeadTime(1);
-            $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
+            if ($_POST['type'] == 0) {
+
+                // 创建相应的待办事项 条件审核
+                $dead_time = $this->getDeadTime(1);
+                $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
            `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
             1," . $id . ",now(),'" . $dead_time . "');";
-            $rows = DB::executeAll($sql);
-            // 创建相应的待办事项 现场指导
-            $dead_time = $this->getDeadTime(2);
-            $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
+                $rows = DB::executeAll($sql);
+                // 创建相应的待办事项 现场指导
+                $dead_time = $this->getDeadTime(2);
+                $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
            `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
             2," . $id . ",now(),'" . $dead_time . "');";
-            $rows = DB::executeAll($sql);
+                $rows = DB::executeAll($sql);
+            } else {
+
+                // 创建相应的待办事项 条件审核
+                $dead_time = $this->getLiansuoDeadTime(21);
+                $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
+            21," . $id . ",now(),'" . $dead_time . "');";
+                $rows = DB::executeAll($sql);
+            }
             DB::commit();
             ajx_current("empty");
         } else if (isset($_GET['opt']) && $_GET['opt'] == 'edit') {
@@ -184,9 +308,40 @@ where x.id=y.apply_id';
             4 => 30,
             5 => 4,
             6 => 2,
-            7 => 3,
-            8 => 15,
-            9=>7
+            7 => 7,
+            8 => 3,
+            9 => 15,
+        );
+        $today = date('Y-m-d', time());
+        if ($type == 4) {
+            return date("Y-m-d H:i:s", strtotime("$today +3   month") - 1);
+        } else {
+            return date("Y-m-d H:i:s", strtotime("$today +$map[$type]   day") - 1);
+        }
+    }
+
+    function getNextSubProcess($pro)
+    {
+        $map = array(
+            1 => 0,
+            2 => 3,
+            3 => 4,
+            4 => 5,
+            5 => 6,
+            6 => 7,
+            7 => 8,
+            8 => 9,
+            9 => 0,
+        );
+        return $map[$pro];
+    }
+    function getLiansuoDeadTime($type)
+    {
+        $map = array(
+            21 => 4,
+            23 => 5,
+            25 => 7,
+            27 => 5
         );
         $today = date('Y-m-d', time());
         return date("Y-m-d H:i:s", strtotime("$today +$map[$type]   day") - 1);

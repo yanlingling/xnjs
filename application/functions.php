@@ -1113,6 +1113,7 @@ function sendShortMessageToDriver($departName, $beginTime, $endTime, $carNumber,
             'signature' => '赣榆县食品药品监督管理局'));
     writeMessageLog($res);
 }
+
 function sendApplyCarMessage($departName, $beginTime, $endTime, $phone)
 {
     $client = new SoapClient('http://202.102.41.99:8090/wsewebsm/services/SendMessageService?wsdl');
@@ -1123,16 +1124,18 @@ function sendApplyCarMessage($departName, $beginTime, $endTime, $phone)
             'signature' => '赣榆县食品药品监督管理局'));
     writeMessageLog($res);
 }
+
 function sendFileShortMessage($fileName, $phone)
 {
     $client = new SoapClient('http://202.102.41.99:8090/wsewebsm/services/SendMessageService?wsdl');
-    $content = '您有一个待阅文件-'.$fileName ;
+    $content = '您有一个待阅文件-' . $fileName;
     // 办公室3月20日 3点-4点预约使用苏G的车辆，请提前做好准备，如有问题请提前与办公室联系。
     $res = $client->sendSms(array('username' => '0518C00121789', 'password' => 'gyyjj2013'),
         array('content' => $content, 'receiveNum' => $phone, 'sendType' => '1',
             'signature' => '赣榆县食品药品监督管理局'));
     writeMessageLog($res);
 }
+
 function sendShortMessageToKezhang($beginTime, $endTime, $phone, $carNumber, $driver_name, $driver_phone)
 {
 
@@ -1175,24 +1178,26 @@ function writeFile($file, $str, $mode = 'w')
         Return true;
     }
 }
-function get_work_days($start_date,$end_date,$is_workday = true){
+
+function get_work_days($start_date, $end_date, $is_workday = true)
+{
 
     if (strtotime($start_date) > strtotime($end_date)) list($start_date, $end_date) = array($end_date, $start_date);
     $start_reduce = $end_add = 0;
-    $start_N = date('N',strtotime($start_date));
+    $start_N = date('N', strtotime($start_date));
     $start_reduce = ($start_N == 7) ? 1 : 0;
-    $end_N = date('N',strtotime($end_date));
-    in_array($end_N,array(6,7)) && $end_add = ($end_N == 7) ? 2 : 1;
-    $alldays = abs(strtotime($end_date) - strtotime($start_date))/86400 + 1;
+    $end_N = date('N', strtotime($end_date));
+    in_array($end_N, array(6, 7)) && $end_add = ($end_N == 7) ? 2 : 1;
+    $alldays = abs(strtotime($end_date) - strtotime($start_date)) / 86400 + 1;
     $weekend_days = floor(($alldays + $start_N - 1 - $end_N) / 7) * 2 - $start_reduce + $end_add;
-    if ($is_workday){
+    if ($is_workday) {
         $workday_days = $alldays - $weekend_days;
         return $workday_days;
     }
     return $weekend_days;
 }
 
-function transTaskStatus($status,$toDepart)
+function transTaskStatus($status, $toDepart)
 {
     switch ($status) {
         case 1:
@@ -1203,9 +1208,10 @@ function transTaskStatus($status,$toDepart)
         case 4:
             return '已超期';
         case 0:
-            return '已转交'.$toDepart;
+            return '已转交' . $toDepart;
     }
 }
+
 function transTaskSupervise($status)
 {
     switch ($status) {
@@ -1218,5 +1224,100 @@ function transTaskSupervise($status)
         case 3:
             return '督察未通过';
     }
+}
+
+
+/***电子效能util function ***/
+function transDianziType($type)
+{
+    $map = array(
+        1 => '条件审核',
+        2 => '现场指导',
+        3 => '现场指导结果通知',
+        4 => '筹备期',
+        5 => '资料审核',
+        6 => '资料流转',
+        7 => '现场检查',
+        8 => '资料审核',
+        9 => '发证'
+    );
+    return $map[$type];
+}
+
+function transDianziProcess($type)
+{
+    $map = array(
+        1 => '受理阶段',
+        3 => '验收阶段',
+        4 => '审批发证',
+        2 => '筹备期',
+        6 => '已办结',
+        0 => '拒绝',
+
+    );
+    return $map[$type];
+}
+
+function transDianziResult($res, $sub_process)
+{
+    if ($res == 1) {
+        if ($sub_process == 1 ||
+            $sub_process == 5 ||
+            $sub_process == 3 ||
+            $sub_process == 7 ||
+            $sub_process == 8
+        ) {
+            return '通过';
+        } else {
+            return '完成';
+        }
+    } else if ($res == 0) {
+        return '拒绝';
+    }
+    return '-';
+}
+
+function getApplyType($type)
+{
+    switch ($type) {
+        case 0:
+            return '药品零售企业';
+        case 1:
+            return '药品零售连锁企业(含门店)';
+        default:
+            return '-';
+    }
+}
+
+function getApplyArea($code)
+{
+    if ($code == 0) {
+        return '南片';
+    } else if ($code == 1) {
+        return '北片';
+    }
+}
+
+function transDate($dateTime)
+{
+    if (!$dateTime) {
+        return '-';
+    }
+    $j = explode(" ", $dateTime);
+    return $j[0];
+}
+
+function getDianziXukeOpt($apply_id,$task_id,$sub_process) {
+    $str = "<a onclick='og.dianzixiaoneng.view($apply_id)'>查看</a>";
+    if ($sub_process == 1 || $sub_process ==5 ||
+        $sub_process == 7
+        || $sub_process ==8
+        || $sub_process ==3
+    ) {
+        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.handleTask($task_id,$apply_id,$sub_process)'>处理</a>";
+    } else {
+        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process)'>完成</a>";
+    }
+    return $str;
 }
 ?>
