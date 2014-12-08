@@ -1239,7 +1239,11 @@ function transDianziType($type)
         6 => '资料流转',
         7 => '现场检查',
         8 => '资料审核',
-        9 => '发证'
+        9 => '发证',
+        21=>'条件审核',
+        23=>'资料流转',
+        25=>'现场检查',
+        27=>'资料报送'
     );
     return $map[$type];
 }
@@ -1252,7 +1256,7 @@ function transDianziProcess($type)
         4 => '审批发证',
         2 => '筹备期',
         6 => '已办结',
-        0 => '拒绝',
+        0 => '拒绝'
 
     );
     return $map[$type];
@@ -1265,7 +1269,9 @@ function transDianziResult($res, $sub_process)
             $sub_process == 5 ||
             $sub_process == 3 ||
             $sub_process == 7 ||
-            $sub_process == 8
+            $sub_process == 8 ||
+            $sub_process ==21
+            || $sub_process ==25
         ) {
             return '通过';
         } else {
@@ -1307,16 +1313,18 @@ function transDate($dateTime)
     return $j[0];
 }
 
-function getDianziXukeOpt($apply_id,$task_id,$sub_process) {
+function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type) {
     $str = "<a onclick='og.dianzixiaoneng.view($apply_id)'>查看</a>";
     if ($sub_process == 1 || $sub_process ==5 ||
         $sub_process == 7
         || $sub_process ==8
         || $sub_process ==3
+        || $sub_process ==21
+        || $sub_process ==25
     ) {
-        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.handleTask($task_id,$apply_id,$sub_process)'>处理</a>";
+        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.handleTask($task_id,$apply_id,$sub_process,$type)'>处理</a>";
     } else {
-        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process)'>完成</a>";
+        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process,$type)'>完成</a>";
     }
     return $str;
 }

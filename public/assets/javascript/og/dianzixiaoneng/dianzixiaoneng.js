@@ -31,11 +31,12 @@ og.dianzixiaoneng= {
             }
         });
     },
-    finishTask: function (taskid,xukeid,sub_process) {
+    finishTask: function (taskid,xukeid,sub_process,type) {
         var parameters = {
             taskid: taskid,
             xukeid: xukeid,
             sub_process:sub_process,
+            type:type,
             result: 1,
             detail:''
         }
@@ -56,9 +57,10 @@ og.dianzixiaoneng= {
             }
         });
     },
-    handleTask: function (taskid,xukeid,sub_process) {
+    handleTask: function (taskid,xukeid,sub_process,type) {
         $('#xuke-task-id').val(taskid);
         $('#xuke-id').val(xukeid);
+        $('#xuke-type').val(type);
         $('#sub-process').val(sub_process);
         $('#xuke-status-detail').val('');
         $('input[name=xuke-status]').attr("checked",false);
@@ -68,6 +70,7 @@ og.dianzixiaoneng= {
         var parameters = {
             taskid: $('#xuke-task-id').val(),
             xukeid: $('#xuke-id').val(),
+            type: $('#xuke-type').val(),
             sub_process: $('#sub-process').val(),
             result: og.common.getCheckboxValue('xuke-status'),
             detail:$.trim($('#xuke-status-detail').val())

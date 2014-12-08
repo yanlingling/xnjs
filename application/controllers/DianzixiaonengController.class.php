@@ -43,7 +43,7 @@ class DianzixiaonengController extends ApplicationController
         $this->YANSHOU_ZILIAOSHENHE = 5;
         $this->YANSHOU_ZILIAOLIUZHUAN = 6;
         $this->YANSHOU_XIANCHANGJIANCHA = 7;
-        $this->FAZHENG_GONGSHIFAZHENG= 9;
+        $this->FAZHENG_GONGSHIFAZHENG = 9;
     } // __construct
 
     /**
@@ -70,13 +70,13 @@ class DianzixiaonengController extends ApplicationController
         $sql = 'select * from og_dianzixiaoneng';
         $rows = DB::executeAll($sql);
         tpl_assign('allxukeList', $rows);
-        $baseSql = 'select x.id,x.`apply_name`,x.`apply_time`,
+        $baseSql = 'select x.id,x.`apply_name`,x.`apply_time`,x.`apply_type`,
 y.sub_process,y.create_time,y.dead_time,
 y.complete_time,y.result, y.id as task_id,y.light_status
 from og_dianzixiaoneng as x,og_dianzixiaoneng_task as y
 where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒绝了得申请，3代码申请还没被处理
         if ($this->depart_name == '药械二科') {
-            $sql = $baseSql . ' and (y.sub_process=1 or y.sub_process=4)';
+            $sql = $baseSql . ' and (y.sub_process=1 or y.sub_process=4 or y.sub_process=21 or y.sub_process=23)';
             $rows = DB::executeAll($sql);
             tpl_assign('xukeshouliList', $rows);
             // 验收
@@ -84,7 +84,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
             $rows = DB::executeAll($sql);
             tpl_assign('yanshouList', $rows);
             //发证
-            $sql = $baseSql . ' and (y.sub_process=9 or y.sub_process=8)';
+            $sql = $baseSql . ' and (y.sub_process=9 or y.sub_process=8 or y.sub_process=27)';
             $rows = DB::executeAll($sql);
             tpl_assign('fazhengList', $rows);
         } else {
@@ -97,7 +97,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
             $rows = DB::executeAll($sql);
             tpl_assign('xukeshouliList', $rows);
             // 验收阶段
-            $sql = $baseSql . ' and (y.sub_process=7)';
+            $sql = $baseSql . ' and (y.sub_process=7 or y.sub_process=25 )';
             if ($this->depart_name == '流通监管一科') {
                 $sql .= ' and x.apply_area =0';
             } else if ($this->depart_name == '流通监管二科') {
@@ -171,6 +171,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         $taskid = $_POST['taskid'];
         $xukeid = $_POST['xukeid'];
         $sub_process = $_POST['sub_process'];
+        $type = $_POST['type'];
         $res = $_POST['result'];
         $detail = addslashes($_POST['detail']);
         $sql = "update og_dianzixiaoneng_task
@@ -187,33 +188,64 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
             $sql = "update og_dianzixiaoneng set process=0  where id=$xukeid";
             DB::executeAll($sql);
         } else {
-            if ($sub_process == $this->SHOULI_XIANCHANGZHIDAO_TONGZHI) {
-                $sql = "update og_dianzixiaoneng set process=2  where id=$xukeid";
+            if ($type == '0') {
+                $this->update_xuke_status($sub_process, $xukeid);
+                $next = $this->getNextSubProcess($sub_process);
+            } else {
+                //药品企业连锁
+                $this->update_liansuo_xuke_status($sub_process, $xukeid);
+                $next = $this->getLiansuoNextSubProcess($sub_process);
             }
-            else if ($sub_process == $this->YANSHOU_CHOUBEIQI) {
-                $sql = "update og_dianzixiaoneng set process=3  where id=$xukeid";
-            }
-            else if ($sub_process == $this->YANSHOU_XIANCHANGJIANCHA) {
-                // 进入公示发证
-                $sql = "update og_dianzixiaoneng set process=4  where id=$xukeid";
-            }
-            else if ($sub_process == $this->FAZHENG_GONGSHIFAZHENG) {
-                // 进入公示发证
-                $sql = "update og_dianzixiaoneng set process=6  where id=$xukeid";
-            }
-            DB::executeAll($sql);
             // 生成下一个任务
-            $next = $this->getNextSubProcess($sub_process);
-            if ($next!= 0) {
-                $dead_time=$this->getDeadTime($next);
+            if ($next != 0) {
+                if ($type == '0') {
+                    $dead_time = $this->getDeadTime($next);
+                } else {
+                    //药品企业连锁
+                    $dead_time = $this->getLiansuoDeadTime($next);
+                }
                 $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
-           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (".$next."," . $xukeid . ",now(),'" . $dead_time . "');";
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (" . $next . "," . $xukeid . ",now(),'" . $dead_time . "');";
                 DB::executeAll($sql);
             }
         }
         DB::beginWork();
         DB::commit();
         ajx_current("empty");
+    }
+
+    function  update_liansuo_xuke_status($sub_process, $xukeid)
+    {
+        $sql='';
+        if ($sub_process == 23) {
+            $sql = "update og_dianzixiaoneng set process=3  where id=$xukeid";
+        } else if ($sub_process == 25) {
+            $sql = "update og_dianzixiaoneng set process=4  where id=$xukeid";
+        } else if ($sub_process == 27) {
+            $sql = "update og_dianzixiaoneng set process=6  where id=$xukeid";
+        }
+        if ($sql!=''){
+            DB::executeAll($sql);
+        }
+    }
+
+    function  update_xuke_status($sub_process, $xukeid)
+    {
+        $sql='';
+        if ($sub_process == $this->SHOULI_XIANCHANGZHIDAO_TONGZHI) {
+            $sql = "update og_dianzixiaoneng set process=2  where id=$xukeid";
+        } else if ($sub_process == $this->YANSHOU_CHOUBEIQI) {
+            $sql = "update og_dianzixiaoneng set process=3  where id=$xukeid";
+        } else if ($sub_process == $this->YANSHOU_XIANCHANGJIANCHA) {
+            // 进入公示发证
+            $sql = "update og_dianzixiaoneng set process=4  where id=$xukeid";
+        } else if ($sub_process == $this->FAZHENG_GONGSHIFAZHENG) {
+            // 进入公示发证
+            $sql = "update og_dianzixiaoneng set process=6  where id=$xukeid";
+        }
+        if ($sql!=''){
+            DB::executeAll($sql);
+        }
     }
     function  add_xuke()
     {
@@ -241,12 +273,6 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                 $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
            `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
             1," . $id . ",now(),'" . $dead_time . "');";
-                $rows = DB::executeAll($sql);
-                // 创建相应的待办事项 现场指导
-                $dead_time = $this->getDeadTime(2);
-                $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
-           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
-            2," . $id . ",now(),'" . $dead_time . "');";
                 $rows = DB::executeAll($sql);
             } else {
 
@@ -323,7 +349,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
     function getNextSubProcess($pro)
     {
         $map = array(
-            1 => 0,
+            1 => 2,
             2 => 3,
             3 => 4,
             4 => 5,
@@ -335,6 +361,23 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         );
         return $map[$pro];
     }
+
+    /**
+     * 获取连锁类型的申请的下一个任务
+     * @param $pro
+     * @return mixed
+     */
+    function getLiansuoNextSubProcess($pro)
+    {
+        $map = array(
+            21 => 23,
+            23 => 25,
+            25 => 27,
+            27 => 0,
+        );
+        return $map[$pro];
+    }
+
     function getLiansuoDeadTime($type)
     {
         $map = array(
