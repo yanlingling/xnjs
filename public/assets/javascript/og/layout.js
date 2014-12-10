@@ -31,9 +31,11 @@ Ext.onReady(function () {
     og.panels = {};
     var taskAction = 'new_list_tasks';
     var lianzhengAction = 'index';
+    var dianzixiaonengAction = 'index';
 /**/
     if (og.loggedUser.userRole == '局长' || og.loggedUser.userRole == '副局长') {
        taskAction = 'new_list_tasks_of_juzhang';
+       dianzixiaonengAction = 'dianzixiaoneng_of_juzhang';
         //lianzhengAction = 'index_of_juzhang';
     }
 
@@ -174,7 +176,7 @@ Ext.onReady(function () {
             refreshOnTagChange: true,
             defaultContent: {
                 type: 'url',
-                data: og.getUrl('dianzixiaoneng', 'index')
+                data: og.getUrl('dianzixiaoneng',dianzixiaonengAction)
             }
         }),
         og.panels.outregist = new og.ContentPanel({

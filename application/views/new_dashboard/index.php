@@ -13,15 +13,9 @@ require_javascript("og/jquery.min.js");
     og.index.showLianzhengModule = function (val) {
         if (panel = Ext.get('tabs-panel__lianzhengxuexi-panel')) panel.setDisplayed(val);
         if (panel = Ext.get('tabs-panel__fengxiandian-panel')) panel.setDisplayed(val);
-/*        if (panel = Ext.get('tabs-panel__yigangshuangze-panel')) panel.setDisplayed(val);
-        if (panel = Ext.get('tabs-panel__wushu-panel')) panel.setDisplayed(val);*/
+    }
+    og.index.showDianzixiaonengModule = function (val) {
         if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(val);
-        // 只有药械2科和流通科 有电子效能
-/*        if (og.loggedUser.departid == 4 || og.loggedUser.departid == 5 ||og.loggedUser.departid == 6) {
-            if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(val);
-        } else {
-            if (panel = Ext.get('tabs-panel__dianzixiaoneng-panel')) panel.setDisplayed(false);
-        }*/
     }
     og.index.showReportModule = function (val) {
         if (panel = Ext.get('tabs-panel__report-panel')) panel.setDisplayed(val);
@@ -44,12 +38,14 @@ require_javascript("og/jquery.min.js");
         og.index.showZuofengModule(false);
         og.index.showReportModule(false);
         og.index.showLianzhengModule(false);
+        og.index.showDianzixiaonengModule(false);
         Ext.getCmp('tabs-panel').setActiveTab('tasks-panel');
     }
     og.index.openLianzheng = function () {
         og.index.showTaskModule(false);
         og.index.showZuofengModule(false);
         og.index.showReportModule(false);
+        og.index.showDianzixiaonengModule(false);
         og.index.showLianzhengModule(true);
         Ext.getCmp('tabs-panel').setActiveTab('lianzhengxuexi-panel');
     }
@@ -57,6 +53,7 @@ require_javascript("og/jquery.min.js");
         og.index.showTaskModule(false);
         og.index.showLianzhengModule(false);
         og.index.showReportModule(false);
+        og.index.showDianzixiaonengModule(false);
         og.index.showZuofengModule(true);
         Ext.getCmp('tabs-panel').setActiveTab('outregist-panel');
     }
@@ -64,8 +61,17 @@ require_javascript("og/jquery.min.js");
         og.index.showTaskModule(false);
         og.index.showLianzhengModule(false);
         og.index.showZuofengModule(false);
+        og.index.showDianzixiaonengModule(false);
         og.index.showReportModule(true);
         Ext.getCmp('tabs-panel').setActiveTab('report-panel');
+    }
+    og.index.openDianzixiaoneng = function () {
+        og.index.showTaskModule(false);
+        og.index.showLianzhengModule(false);
+        og.index.showZuofengModule(false);
+        og.index.showReportModule(false);
+        og.index.showDianzixiaonengModule(true);
+        Ext.getCmp('tabs-panel').setActiveTab('dianzixiaoneng-panel');
     }
 </script>
 
@@ -159,6 +165,26 @@ require_javascript("og/jquery.min.js");
             <div class="item-button status-" >
                 <div class="item-line"></div>
                 <a class="status-0"   onclick="og.index.openJianbao()">进入</a>
+            </div>
+        </li>
+        <li class="item" >
+            <div class="inner-border"></div>
+            <div class="content">
+                <div class="right">
+                    <h1 class="title">电子效能监察
+                    </h1>
+                    <div class="description">
+                        电子效能监察....
+                    </div>
+                </div>
+                <div class="left">
+                    <i class="app-icon app-icon-dianzixiaoneng"></i>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="item-button status-" >
+                <div class="item-line"></div>
+                <a class="status-0"   onclick="og.index.openDianzixiaoneng()">进入</a>
             </div>
         </li>
     </ul>

@@ -75,7 +75,6 @@ og.dianzixiaoneng= {
             result: og.common.getCheckboxValue('xuke-status'),
             detail:$.trim($('#xuke-status-detail').val())
         };
-        console.log(parameters);
         if(!parameters.result){
             $('#comment-error').html('请选择处理结果');
             return;
@@ -99,5 +98,44 @@ og.dianzixiaoneng= {
             scope: this
         });
     },
+    showDelayApply: function (taskid) {
+        $('#xuke-task-id').val(taskid);
+        $('#xuke-delay-apply-detail').val('');
+        $('#xuke-delay-apply-day').val('');
+        $('#xukeDelayApplyModal').modal();
+    },
+    delayApplyOk: function () {
+        var parameters = {
+            taskid: $('#xuke-task-id').val(),
+            day: $.trim($('#xuke-delay-apply-day').val()),
+            detail:$.trim($('#xuke-delay-apply-detail').val())
+        };
+        if(!parameters.day){
+            $('#xuke-apply-error').html('请填写申请延期天数');
+            return;
+        }
+        if(!$.isNumeric(parameters.day)){
+            $('#xuke-apply-error').html('请填写正确延期天数');
+            return;
+        }
+        $('#xuke-apply-error').html('');
+        $('#xukeDelayApplyModal').modal('hide');
+        //return;
+        var url = og.getUrl('dianzixiaoneng', 'delay_apply', {id: parameters.taskid});
+        og.openLink(url, {
+            method: 'POST',
+            post: parameters,
+            callback: function (success, data) {
+                if (success && !data.errorCode) {
+                    Ext.MessageBox.alert("提示", "创建成功");
+                    Ext.getCmp('dianzixiaoneng-panel').reload();
+                } else {
+                    if (!data.errorMessage || data.errorMessage == '')
+                        og.err(lang("error xuke handle"));
+                }
+            },
+            scope: this
+        });
+    }
 }
 

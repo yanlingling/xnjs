@@ -18,6 +18,7 @@ $genid = gen_id();
             <span id='yanshou-sub-link' class="<?php echo $tab == 'yanshou' ? 'sub-tab-content' : ''; ?>">许可验收</span>
             <span id='fazheng-sub-link' class="<?php echo $tab == 'fazheng' ? 'sub-tab-content' : ''; ?>">审批发证</span>
             <span id='all-sub-link' class="<?php echo $tab == 'all' ? 'sub-tab-content' : ''; ?>">所有许可</span>
+            <span id='delay-sub-link' class="<?php echo $tab == 'delay' ? 'sub-tab-content' : ''; ?>">延期申请</span>
         </div>
         <div class="clearFloat"></div>
     </div>
@@ -26,7 +27,9 @@ $genid = gen_id();
     include('xukeyanshou.php');
     include('xukefazheng.php');
     include('allxuke.php');
+    include('delayApply.php');
     include('handleModal.php');
+    include('delayApplyModal.php');
     ?>
 </div>
 <script>
@@ -51,6 +54,8 @@ $genid = gen_id();
             $('#yanshouTabContent').removeClass('hide');
         } else if (ele.html() == '审批发证') {
             $('#fazhengTabContent').removeClass('hide');
+        }else if (ele.html() == '延期申请') {
+            $('#delayTabContent').removeClass('hide');
         }
     }
     $('.sub-tab span').click(function () {

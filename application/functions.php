@@ -1313,7 +1313,8 @@ function transDate($dateTime)
     return $j[0];
 }
 
-function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type) {
+function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type,$dead_time) {
+    $userRole = logged_user()->getUserRole();
     $str = "<a onclick='og.dianzixiaoneng.view($apply_id)'>查看</a>";
     if ($sub_process == 1 || $sub_process ==5 ||
         $sub_process == 7
@@ -1326,6 +1327,10 @@ function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type) {
     } else {
         $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process,$type)'>完成</a>";
     }
+        // 过期的任务不能再申请延期
+        if (strtotime($dead_time) > time()) {
+            $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.showDelayApply($task_id)'>申请延期</a>";
+        }
     return $str;
 }
 ?>

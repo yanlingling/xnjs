@@ -389,6 +389,101 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         $today = date('Y-m-d', time());
         return date("Y-m-d H:i:s", strtotime("$today +$map[$type]   day") - 1);
     }
+    function dianzixiaoneng_of_juzhang()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        // 查询岗位职责列表
+        DB::beginWork();
+        // 局长查询科室的汇总
+        $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
+            FROM " . TABLE_PREFIX . "project_tasks AS x, "
+            . TABLE_PREFIX . "department AS y
+            WHERE x.`assigned_to_departid` = y.depart_id and x.deleted=0
+            GROUP BY x.`assigned_to_departid`";
+
+        /* $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status,count(id)
+             FROM " . TABLE_PREFIX . "project_tasks AS x, "
+             . TABLE_PREFIX . "department AS y, "
+             . TABLE_PREFIX . "og_project_task_delay_apply AS z
+             WHERE x.`assigned_to_departid` = y.depart_id and z.depart_id=x.id and z.status=0
+             GROUP BY x.`assigned_to_departid`";*/
+        // 副局长只能看到分管科室的
+        if (logged_user()->getUserRole() == '副局长') {
+            $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
+                FROM " . TABLE_PREFIX . "project_tasks AS x, " . TABLE_PREFIX . "department AS y, " . TABLE_PREFIX . "users AS z
+                WHERE x.`assigned_to_departid` = y.depart_id "
+                . "and  FIND_IN_SET(z.id, y.fujuzhang_id) !=0 and x.deleted=0
+                and z.id=" . logged_user()->getId() . "
+                GROUP BY x.`assigned_to_departid`";
+        }
+        $rows = DB::executeAll($sql);
+        DB::commit();
+
+        $i = 0;
+        foreach ($rows as $groupItem) {
+            $dep_id = $groupItem['depart_id'];
+            $sql2 = "SELECT count(*) as count
+            FROM  " . TABLE_PREFIX . "project_task_delay_apply as x," . TABLE_PREFIX . "project_tasks as y
+            WHERE  `depart_id` =$dep_id
+            and x.task_id = y.id
+            and y.deleted!=1
+            AND STATUS =0
+            ";
+            $rows2 = DB::executeAll($sql2);
+            // print_r($rows2);
+            $rows[$i]['apply_num'] = $rows2[0]['count'];
+
+            // 计算待评价任务
+            if (logged_user()->getUserRole() == '副局长') {
+                // 效能办评价完了  副局长才能评
+                $sql3 = "SELECT count(*) as count
+            FROM  " . TABLE_PREFIX . "project_tasks as y
+            WHERE  `assigned_to_departid` =$dep_id
+            and y.deleted!=1
+            AND light_status =1 and comment_status_fujuzhang=0 and comment_status_xiaoneng!=0
+            ";
+            }
+            if (logged_user()->getUserRole() == '局长') {
+                $sql3 = "SELECT count(*) as count
+            FROM  " . TABLE_PREFIX . "project_tasks as y
+            WHERE  `assigned_to_departid` =$dep_id
+            and y.deleted!=1
+            AND light_status =1 and comment_status_juzhang=0 and comment_status_fujuzhang!=0
+            ";
+            }
+            $rows3 = DB::executeAll($sql3);
+            $rows[$i]['comment_num'] = $rows3[0]['count'];
+            $i++;
+        }
+        tpl_assign('group_task_list', $rows);
+    }
+    /**
+     * 处理任务延期的申请
+     */
+    function delay_apply()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        ajx_current("empty");
+        $taskId = $_POST['taskid'];
+        $reason = $_POST['detail'];
+        $hopeDay = $_POST['day'];
+        $departId = $this->depart_id;
+        $now = date('Y-m-d H:i:s', time());
+        DB::beginWork();
+        $sql = "INSERT INTO  `" . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply` ( `task_id` ,`reason` , `create_time` , `hope_day` ,
+`status`,`user_id`,`depart_id` ) VALUES ( '$taskId','$reason' ,now(),  '$hopeDay','0','" . logged_user()->getId() . "','$departId' ); ";
+        DB::execute($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
 
 } // TaskController
 
