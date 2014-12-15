@@ -26,6 +26,7 @@ class DianzixiaonengController extends ApplicationController
         $this->LIUTONG1KE_ID = 6;
         // 流通监管2科id
         $this->LIUTONG2KE_ID = 4;
+
         $sql = "SELECT y.depart_id,y.depart_name,y.manager_id
             FROM " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
             WHERE y.depart_id = z.depart_id
@@ -35,6 +36,7 @@ class DianzixiaonengController extends ApplicationController
         DB::commit();
         $this->depart_id = $rows1[0]['depart_id'];
         $this->depart_name = $rows1[0]['depart_name'];
+        $this->depart_manager_id= $rows1[0]['manager_id'];
         $this->SHOULI_TIAOJIANSHENHE = 1;
         $this->SHOULI_XIANCHANGZHIDAO = 2;
         $this->SHOULI_XIANCHANGZHIDAO_TONGZHI = 3;
@@ -55,6 +57,15 @@ class DianzixiaonengController extends ApplicationController
             flash_error(lang('no access permissions'));
             ajx_current("empty");
             return;
+        }
+        if (isset($_GET['depart_id'])) {
+            $this->depart_id = $_GET['depart_id'];
+            $sql = "SELECT y.depart_id,y.depart_name,y.manager_id
+            FROM " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
+            WHERE y.depart_id=".$this->depart_id;
+            $rows1 = DB::executeAll($sql);
+            $this->depart_name = $rows1[0]['depart_name'];
+            $this->depart_manager_id= $rows1[0]['manager_id'];
         }
         // $userRole = logged_user()->getUserRole();
         tpl_assign('isYaoxie2', false);
@@ -106,6 +117,30 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
             $rows = DB::executeAll($sql);
             tpl_assign('yanshouList', $rows);
         }
+        // 查询延期申请
+        DB::beginWork();
+        $sql = "SELECT x.id,x.reason, y.id as task_id,y.sub_process, x.hope_day,
+               x.agree_day, x.status,x.create_time, x.handle_time,z.username,
+               w.id as xuke_id
+            FROM " . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply AS x, "
+            . TABLE_PREFIX . "dianzixiaoneng_task AS y, "
+            . TABLE_PREFIX . "users AS z"
+            . TABLE_PREFIX . " og_dianzixiaoneng AS w
+            WHERE x.task_id = y.id
+            AND z.id  = x.user_id
+            AND w.id  = y.apply_id
+            AND x.depart_id =$depart_id and y.deleted = !1
+            order by x.create_time DESC,x.status ASC
+            ";
+        $rows = DB::executeAll($sql);
+        DB::commit();
+        tpl_assign('apply_list', $rows);
+        $isSelf = 'other';
+        if ($this->depart_manager_id == logged_user()->getId()) {
+            $isSelf = 'self';
+        }
+        //   echo $isSelf;
+        tpl_assign('isSelf', $isSelf);
 
     }
 
@@ -174,6 +209,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         $type = $_POST['type'];
         $res = $_POST['result'];
         $detail = addslashes($_POST['detail']);
+        DB::beginWork();
         $sql = "update og_dianzixiaoneng_task
                 set
                 result='$res',
@@ -181,8 +217,12 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                 complete_time=now(),
                 light_status=1
                 where id=$taskid";
-        DB::beginWork();
         $rows = DB::executeAll($sql);
+        $sql = "select id,area,type  from og_dianzixiaoneng
+                where id=$xukeid";
+        $rows = DB::executeAll($sql);
+        $area =$rows[0]['area']; 
+
         // 被拒绝
         if ($res == 0) {
             $sql = "update og_dianzixiaoneng set process=0  where id=$xukeid";
@@ -204,8 +244,9 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                     //药品企业连锁
                     $dead_time = $this->getLiansuoDeadTime($next);
                 }
+                $departid = $this->getTaskDepart($next,$area);
                 $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
-           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (" . $next . "," . $xukeid . ",now(),'" . $dead_time . "');";
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`,assign_to_departid) VALUES (" . $next . "," . $xukeid . ",now(),'" . $dead_time . "',$departid);";
                 DB::executeAll($sql);
             }
         }
@@ -377,6 +418,41 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         );
         return $map[$pro];
     }
+    function getTaskDepart($pro,$area)
+    {
+        $map = array(
+            1 => 5,
+            4 => 5,
+            5 => 5,
+            6 => 5,
+            8 => 5,
+            9 => 5,
+            21 => 5,
+            23 => 5,
+            27 => 5,
+        );
+        //南
+        $mapNan= array(
+            2 => 6,
+            3 => 6,
+            7 => 6,
+            25 => 6,
+        );
+        $mapBei= array(
+            2 => 4,
+            3 =>4 ,
+            7 => 4,
+            25 => 4,
+        );
+        if ($map[$pro]) {
+            return $map[$pro];
+        }
+        if ($area==0) {
+            return $mapNan[$pro];
+        } else {
+            return $mapBei[$pro];
+        }
+    }
 
     function getLiansuoDeadTime($type)
     {
@@ -398,68 +474,24 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         }
         // 查询岗位职责列表
         DB::beginWork();
-        // 局长查询科室的汇总
-        $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
-            FROM " . TABLE_PREFIX . "project_tasks AS x, "
-            . TABLE_PREFIX . "department AS y
-            WHERE x.`assigned_to_departid` = y.depart_id and x.deleted=0
-            GROUP BY x.`assigned_to_departid`";
-
-        /* $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status,count(id)
-             FROM " . TABLE_PREFIX . "project_tasks AS x, "
-             . TABLE_PREFIX . "department AS y, "
-             . TABLE_PREFIX . "og_project_task_delay_apply AS z
-             WHERE x.`assigned_to_departid` = y.depart_id and z.depart_id=x.id and z.status=0
-             GROUP BY x.`assigned_to_departid`";*/
-        // 副局长只能看到分管科室的
-        if (logged_user()->getUserRole() == '副局长') {
-            $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
-                FROM " . TABLE_PREFIX . "project_tasks AS x, " . TABLE_PREFIX . "department AS y, " . TABLE_PREFIX . "users AS z
-                WHERE x.`assigned_to_departid` = y.depart_id "
-                . "and  FIND_IN_SET(z.id, y.fujuzhang_id) !=0 and x.deleted=0
-                and z.id=" . logged_user()->getId() . "
-                GROUP BY x.`assigned_to_departid`";
-        }
+        $res = array();
+        //药械二科
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->YAOXIE2KE_ID;
         $rows = DB::executeAll($sql);
+        $res[0]['depart_name'] ='药械二科';
+        $res[0]['apply_num'] =$rows [0]['count'];
+
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG1KE_ID;
+        $rows = DB::executeAll($sql);
+        $res[1]['depart_name'] ='流通监管一科';
+        $res[1]['apply_num'] =$rows [0]['count'];
+
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG2KE_ID;
+        $rows = DB::executeAll($sql);
+        $res[2]['depart_name'] ='流通监管二科';
+        $res[2]['apply_num'] =$rows [0]['count'];
         DB::commit();
-
-        $i = 0;
-        foreach ($rows as $groupItem) {
-            $dep_id = $groupItem['depart_id'];
-            $sql2 = "SELECT count(*) as count
-            FROM  " . TABLE_PREFIX . "project_task_delay_apply as x," . TABLE_PREFIX . "project_tasks as y
-            WHERE  `depart_id` =$dep_id
-            and x.task_id = y.id
-            and y.deleted!=1
-            AND STATUS =0
-            ";
-            $rows2 = DB::executeAll($sql2);
-            // print_r($rows2);
-            $rows[$i]['apply_num'] = $rows2[0]['count'];
-
-            // 计算待评价任务
-            if (logged_user()->getUserRole() == '副局长') {
-                // 效能办评价完了  副局长才能评
-                $sql3 = "SELECT count(*) as count
-            FROM  " . TABLE_PREFIX . "project_tasks as y
-            WHERE  `assigned_to_departid` =$dep_id
-            and y.deleted!=1
-            AND light_status =1 and comment_status_fujuzhang=0 and comment_status_xiaoneng!=0
-            ";
-            }
-            if (logged_user()->getUserRole() == '局长') {
-                $sql3 = "SELECT count(*) as count
-            FROM  " . TABLE_PREFIX . "project_tasks as y
-            WHERE  `assigned_to_departid` =$dep_id
-            and y.deleted!=1
-            AND light_status =1 and comment_status_juzhang=0 and comment_status_fujuzhang!=0
-            ";
-            }
-            $rows3 = DB::executeAll($sql3);
-            $rows[$i]['comment_num'] = $rows3[0]['count'];
-            $i++;
-        }
-        tpl_assign('group_task_list', $rows);
+        tpl_assign('group_task_list', $res);
     }
     /**
      * 处理任务延期的申请
