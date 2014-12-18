@@ -46,6 +46,7 @@ $genid = gen_id();
         $('#yanshouTabContent').addClass('hide');
         $('#allTabContent').addClass('hide');
         $('#fazhengTabContent').addClass('hide');
+        $('#delayTabContent').addClass('hide');
         if (ele.html() == '许可受理') {
             $('#xukeTabContent').removeClass('hide');
         } else if (ele.html() == '所有许可') {

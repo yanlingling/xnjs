@@ -104,6 +104,25 @@ og.dianzixiaoneng= {
         $('#xuke-delay-apply-day').val('');
         $('#xukeDelayApplyModal').modal();
     },
+
+    /**
+     * 跳转到科室的任务
+     * @param depart_id
+     */
+    goToDepartTask: function (depart_id) {
+        var url = og.getUrl('dianzixiaoneng', 'index', {depart_id: depart_id, tab: 'xuke'});
+        og.openLink(url, {});
+    },
+
+    /**
+     * 跳转到科室的延期申请
+     * @param depart_id
+     */
+    goToDepartApply: function (depart_id) {
+        var url = og.getUrl('dianzixiaoneng', 'index', {depart_id: depart_id, tab: 'delay'});
+        og.openLink(url, {});
+    },
+
     delayApplyOk: function () {
         var parameters = {
             taskid: $('#xuke-task-id').val(),

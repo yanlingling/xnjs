@@ -124,13 +124,12 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                w.id as xuke_id
             FROM " . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply AS x, "
             . TABLE_PREFIX . "dianzixiaoneng_task AS y, "
-            . TABLE_PREFIX . "users AS z"
-            . TABLE_PREFIX . " og_dianzixiaoneng AS w
+            . TABLE_PREFIX . "users AS z,"
+            . TABLE_PREFIX . "dianzixiaoneng AS w
             WHERE x.task_id = y.id
             AND z.id  = x.user_id
             AND w.id  = y.apply_id
-            AND x.depart_id =$depart_id and y.deleted = !1
-            order by x.create_time DESC,x.status ASC
+            AND x.depart_id =$this->depart_id order by x.create_time DESC,x.status ASC
             ";
         $rows = DB::executeAll($sql);
         DB::commit();
@@ -465,7 +464,7 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         $today = date('Y-m-d', time());
         return date("Y-m-d H:i:s", strtotime("$today +$map[$type]   day") - 1);
     }
-    function dianzixiaoneng_of_juzhang()
+    function index_of_juzhang()
     {
         if (logged_user()->isGuest()) {
             flash_error(lang('no access permissions'));
@@ -478,18 +477,27 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         //药械二科
         $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->YAOXIE2KE_ID;
         $rows = DB::executeAll($sql);
+        $res[0]['depart_id'] =$this->YAOXIE2KE_ID;
         $res[0]['depart_name'] ='药械二科';
         $res[0]['apply_num'] =$rows [0]['count'];
 
         $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG1KE_ID;
         $rows = DB::executeAll($sql);
+        $res[1]['depart_id'] =$this->LIUTONG1KE_ID;
         $res[1]['depart_name'] ='流通监管一科';
         $res[1]['apply_num'] =$rows [0]['count'];
 
         $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG2KE_ID;
         $rows = DB::executeAll($sql);
+        $res[2]['depart_id'] =$this->LIUTONG2KE_ID;
         $res[2]['depart_name'] ='流通监管二科';
         $res[2]['apply_num'] =$rows [0]['count'];
+        $sql = "select xiaoneng_score,depart_id from og_department
+                where depart_id in($this->YAOXIE2KE_ID,$this->LIUTONG1KE_ID,$this->LIUTONG2KE_ID) order by depart_id";
+        $rows = DB::executeAll($sql);
+        $res[0]['xiaoneng_score'] = $rows[1]['xiaoneng_score'];
+        $res[1]['xiaoneng_score'] = $rows[2]['xiaoneng_score'];
+        $res[2]['xiaoneng_score'] = $rows[0]['xiaoneng_score'];
         DB::commit();
         tpl_assign('group_task_list', $res);
     }
