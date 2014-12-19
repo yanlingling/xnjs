@@ -1,49 +1,54 @@
 
 <div id="delayTabContent" class="<?php echo $tab == 'delay' ? '' : 'hide'; ?>">
-        <div class="table-header">
-            <table width='100%'>
-                <tr>
-                    <td class="yanqid1">岗位职责</td>
-                    <td class="yanqid2">申请延期天数</td>
-                    <td class="yanqid3">申请创建时间</td>
-                    <td class="yanqid8">创建人</td>
-                    <td class="yanqid4">批准天数</td>
-                    <td class="yanqid5">状态</td>
-                    <td class="yanqid6">审批时间</td>
-                    <td class="yanqid7">操作</td>
-                </tr>
-            </table>
-        </div>
-        <?php
-        $i = 0;
-        foreach ($apply_list as $item) {
-        echo '<div id="delay-apply-' . $item['id'] . '"><table width=100%>';
-        $i++;
-        if ($i % 2 == 0) {
-            echo '<tr>';
-        } else {
-            echo '<tr class="dashaltrow">';
-        }?>
-        <td class='yanqid1'
-            title="<?php echo $item['title'] ?>"><?php echo mb_substr($item['title'], 0, 12, "UTF-8"); ?></td>
-        <td class='yanqid2'><?php echo $item['hope_day'] ?></td>
-        <td style='display:none'><?php echo $item['reason'] ?></td>
-        <td class='yanqid3'><?php echo $item['create_time'] ?></td>
-        <td class='yanqid8'><?php echo $item['username'] ?></td>
-        <td class='yanqid4'><?php echo $item['agree_day'] ?></td>
-        <td class='yanqid5'><?php echo get_apply_status_dzxn($item['status']) ?></td>
-        <td class='yanqid6'><?php echo gethandletime_dzxn($item['handle_time']) ?></td>
-        <td class='yanqid7'><?php echo getoptcontent_dzxn($item['status'], $item['id'], $item['task_id'], $isSelf) ?></td>
-        </tr></table></div>
-    <?php
-    }
-    if ($i == 0) {
-        ?>
-        <div class="no-data">当前暂无相关数据</div>
-    <?php
-    }
-    ?>
+    <div>
+        <div class="content-wraper">
 
+            <table width='100%' class="og-table">
+                <thead class="table-header">
+                <td class="dianzi-d1">任务内容</td>
+                <td class="dianzi-d2">申请延期天数</td>
+                <td class="dianzi-d3">申请创建时间</td>
+                <td class="dianzi-d5">创建人</td>
+                <td class="dianzi-d4">批准天数</td>
+                <td class="dianzi-d5">状态</td>
+                <td class="dianzi-d6">审批时间</td>
+                <td class="dianzi-d7">操作</td>
+                </thead>
+                <?php
+                $i = 0;
+                foreach ($apply_list as $item) {
+                    ?>
+
+                    <?php
+                    $i++;
+                    if ($i % 2 == 0) {
+                        echo '<tr>';
+                    } else {
+                        echo '<tr class="dashaltrow">';
+                    }?>
+                    <td class='dianzi-d1'><?php echo transDianziType($item['sub_process']); ?></td>
+                    <td class='dianzi-d2'> <?php echo $item['hope_day']; ?> </td>
+                    <td class='dianzi-d3'> <?php echo $item['create_time']; ?> </td>
+                    <td class='dianzi-d5'> <?php echo $item['username']; ?> </td>
+                    <td class='dianzi-d4'> <?php echo $item['agree_day']; ?> </td>
+                    <td class='dianzi-d5'> <?php echo get_apply_status_dzxn($item['status']); ?> </td>
+                    <td class='dianzi-d6'> <?php echo gethandletime_dzxn($item['handle_time']); ?> </td>
+                    <td class='dianzi-d7'> <?php echo getoptcontent_dzxn($item['status'], $item['id'], $item['task_id'], $isSelf); ?> </td>
+
+                    </tr>
+                <?php
+                }
+                ?>
+            </table>
+            <?php
+            if ($i == 0) {
+                ?>
+                <div class="no-data">当前暂无相关数据</div>
+            <?php
+            }
+            ?>
+        </div>
+    </div>
 </div>
 <?php
 function gethandletime_dzxn($time)
