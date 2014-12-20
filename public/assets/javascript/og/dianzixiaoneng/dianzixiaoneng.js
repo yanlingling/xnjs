@@ -104,6 +104,21 @@ og.dianzixiaoneng= {
         $('#xuke-delay-apply-day').val('');
         $('#xukeDelayApplyModal').modal();
     },
+    viewDelayApplyDetail: function (id, taskid,detail,applyDay) {
+        $('#xuke-task-id').val(taskid);
+        $('#xuke-delay-apply-detail').val(detail);
+        $('#xuke-delay-apply-day').val(applyDay);
+        $('#xuke-apply-submit').hide();
+        $('#xukeDelayApplyModal').modal();
+    },
+    handleDelayApply: function (id, taskid,detail,applyDay) {
+        $('#xuke-task-id').val(taskid);
+        $('#xuke-apply-id').val(id);
+        $('#xuke-delay-apply-detail').val(detail);
+        $('#xuke-delay-apply-day').val(applyDay);
+        $('#xukeHandleDelayApplyModal').modal();
+    },
+
 
     /**
      * 跳转到科室的任务
@@ -151,6 +166,89 @@ og.dianzixiaoneng= {
                 } else {
                     if (!data.errorMessage || data.errorMessage == '')
                         og.err(lang("error xuke handle"));
+                }
+            },
+            scope: this
+        });
+    },
+
+    /**
+     * 同意延期申请
+     * @param id
+     * @param task_id
+     */
+    agreeDelayApply: function () {
+        var id = $('#xuke-apply-id').val();
+        var task_id = $('#xuke-task-id').val();
+        var parameters = {
+            agreeDay: $.trim($('#xuke-delay-apply-agree-day').val()),
+            taskId: task_id
+        };
+        if (!$.isNumeric(parameters.agreeDay)) {
+            $('#xuke-apply-error').html('同意延期的天数必须是数字');
+            return;
+        }
+        var url = og.getUrl('dianzixiaoneng', 'agree_delay_apply', {id: id});
+        og.openLink(url, {
+            method: 'POST',
+            post: parameters,
+            callback: function (success, data) {
+                if (success && !data.errorCode) {
+                    Ext.MessageBox.alert("提示", "操作成功");
+                    Ext.getCmp('dianzixiaoneng-panel').reload();
+                } else {
+                    if (!data.errorMessage || data.errorMessage == '')
+                        og.err(lang("error task delay apply"));
+                }
+            },
+            scope: this
+        });
+    },
+
+    /**
+     * 不同意的处理
+     * @param id
+     * @param task_id
+     */
+    disagreeDelayApply: function () {
+        var id = $('#xuke-apply-id').val();
+        var task_id = $('#xuke-task-id').val();
+        var url = og.getUrl('dianzixiaoneng', 'disagree_delay_apply', {id: id});
+        og.openLink(url, {
+            method: 'POST',
+            callback: function (success, data) {
+                if (success && !data.errorCode) {
+
+                    Ext.MessageBox.alert("提示", "操作成功");
+                    Ext.getCmp('dianzixiaoneng-panel').reload();
+                } else {
+                    if (!data.errorMessage || data.errorMessage == '')
+                        og.err(lang("error task delay apply"));
+                }
+            },
+            scope: this
+        });
+    },
+
+    cancelDelayApply: function (id) {
+        Ext.MessageBox.confirm('撤回申请', '您确认要撤回该申请吗？', function (btn) {
+            if (btn == 'yes') {
+                dianzixiaoneng.doCancelDelayApply(id);
+            }
+        });
+    },
+    doCancelDelayApply: function (id) {
+        var url = og.getUrl('dianzixiaoneng', 'task_delay_apply_cancel', {id: id});
+        og.openLink(url, {
+            method: 'POST',
+            post: {},
+            callback: function (success, data) {
+                if (success && !data.errorCode) {
+                    Ext.MessageBox.alert("提示", "操作成功");
+                    Ext.getCmp('dianzixiaoneng-panel').reload();
+                } else {
+                    if (!data.errorMessage || data.errorMessage == '')
+                        og.err(lang("error task delay apply"));
                 }
             },
             scope: this

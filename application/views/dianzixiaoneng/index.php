@@ -30,6 +30,7 @@ $genid = gen_id();
     include('delayApply.php');
     include('handleModal.php');
     include('delayApplyModal.php');
+    include('handleDelayApplyModal.php');
     ?>
 </div>
 <script>

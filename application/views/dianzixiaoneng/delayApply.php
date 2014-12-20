@@ -33,7 +33,7 @@
                     <td class='dianzi-d4'> <?php echo $item['agree_day']; ?> </td>
                     <td class='dianzi-d5'> <?php echo get_apply_status_dzxn($item['status']); ?> </td>
                     <td class='dianzi-d6'> <?php echo gethandletime_dzxn($item['handle_time']); ?> </td>
-                    <td class='dianzi-d7'> <?php echo getoptcontent_dzxn($item['status'], $item['id'], $item['task_id'], $isSelf); ?> </td>
+                    <td class='dianzi-d7'> <?php echo getoptcontent_dzxn($item['status'], $item['id'], $item['task_id'], $isSelf, $item['reason'], $item['hope_day']); ?> </td>
 
                     </tr>
                 <?php
@@ -78,7 +78,7 @@ function get_apply_status_dzxn($status)
     }
 }
 
-function getoptcontent_dzxn($status, $id, $task_id, $isSelf)
+function getoptcontent_dzxn($status, $id, $task_id, $isSelf,$detail,$hopeDay)
 {
     $userRole = logged_user()->getUserRole();
     $str = '';
@@ -86,14 +86,14 @@ function getoptcontent_dzxn($status, $id, $task_id, $isSelf)
 // 只有局长有处理延期申请的权限
     if ($userRole == '局长') {
         if ($status == 0) {
-            $str .= '&nbsp;&nbsp;<a onclick="ogTasks.viewDelayApplyDetail(' . $id . ',' . $task_id . ')">处理申请</a>';
+            $str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.handleDelayApply(' . $id . ',' . $task_id . ',' . $detail. ',' . $hopeDay. ')">处理申请</a>';
         }
         return $str;
     } else {
-        $str = '<a onclick="ogTasks.viewDelayApplyDetail(' . $id . ',' . $status . ')">查看</a>';
+        $str = '<a onclick="og.dianzixiaoneng.viewDelayApplyDetail(' . $id . ',' . $status . ',' . $detail. ',' . $hopeDay. ')">查看</a>';
 // 还未处理的请求可以撤回
         if ($status == 0 && $isSelf == 'self') {
-            $str .= '&nbsp;&nbsp;<a onclick="ogTasks.cancelDelayApply(' . $id . ')">撤回</a>';
+            $str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.cancelDelayApply(' . $id . ')">撤回</a>';
         }
         return $str;
     }

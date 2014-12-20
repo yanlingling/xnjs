@@ -525,6 +525,69 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         ajx_current("empty");
     }
 
+    /**
+     * 同意延期申请的请求
+     */
+    function agree_delay_apply()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        $taskId = $_POST['taskId'];
+        ajx_current("empty");
+        $id = get_id();
+        $agreeDay = $_POST['agreeDay'];
+        DB::beginWork();
+        $sql = "update `" . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply` set agree_day=$agreeDay,
+        status=1, handle_time=now() where id=$id";
+        DB::execute($sql);
+        // 更新任务的到期时间
+        $sql2 = "update `" . TABLE_PREFIX . "dianzixiaoneng_task` set dead_time = DATE_ADD(dead_time ,INTERVAL $agreeDay DAY)
+where id = $taskId";
+        DB::execute($sql2);
+        DB::commit();
+        ajx_current("empty");
+    }
+
+    /**
+     * 不同意延期申请处理
+     */
+    function disagree_delay_apply()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        ajx_current("empty");
+        $id = get_id();
+        DB::beginWork();
+        $sql = "update `" . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply` set
+        status=2 where id=$id";
+        DB::execute($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
+    /**
+     * 撤回申请
+     */
+    function task_delay_apply_cancel()
+    {
+        if (logged_user()->isGuest()) {
+            flash_error(lang('no access permissions'));
+            ajx_current("empty");
+            return;
+        }
+        ajx_current("empty");
+        $id = get_id();
+        DB::beginWork();
+        $sql = "update `" . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply` set status= 3 where id=$id";
+        DB::execute($sql);
+        DB::commit();
+        ajx_current("empty");
+    }
 } // TaskController
 
 
