@@ -30,7 +30,7 @@
                         <td class='dianzi-d2'><?php echo getApplyType($item['apply_type']); ?></td>
                         <td class='dianzi-d3'> <?php echo transDate($item['apply_time']); ?> </td>
                         <td class='dianzi-d4'> <?php echo transDianziProcess($item['process']); ?> </td>
-                    <td class='dianzi-d9'> <?php echo getDianziAllxukeOpt($item['id'],$item['task_id'],$item['sub_process']); ?> </td>
+                    <td class='dianzi-d9'> <?php echo getDianziAllxukeOpt($item['id'],$item['task_id'],$item['sub_process'],$isYaoxie2); ?> </td>
                         </tr>
             <?php
             }
@@ -48,9 +48,11 @@
 
 </div>
 <?php
-function getDianziAllxukeOpt($apply_id,$task_id,$sub_process) {
+function getDianziAllxukeOpt($apply_id,$task_id,$sub_process,$isYaoxie2) {
     $str = "<a onclick='og.dianzixiaoneng.view($apply_id)'>查看</a>";
-    $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.del($apply_id)'>删除</a>";
+    if ($isYaoxie2) {
+        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.del($apply_id)'>删除</a>";
+    }
     return $str;
 }
 ?>

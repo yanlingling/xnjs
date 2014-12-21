@@ -13,19 +13,33 @@ $genid = gen_id();
 <div>
     <div>
         <div class="sub-tab">
+            <span id='all-sub-link' class="<?php
+            echo $tab == 'all' ? 'sub-tab-content' : '';
+            ?>">所有许可</span>
             <span id='xuke-sub-link'
-                  class="<?php echo $tab == 'xuke' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>许可受理</span>
-            <span id='yanshou-sub-link' class="<?php echo $tab == 'yanshou' ? 'sub-tab-content' : ''; ?>">许可验收</span>
-            <span id='fazheng-sub-link' class="<?php echo $tab == 'fazheng' ? 'sub-tab-content' : ''; ?>">审批发证</span>
-            <span id='all-sub-link' class="<?php echo $tab == 'all' ? 'sub-tab-content' : ''; ?>">所有许可</span>
-            <span id='delay-sub-link' class="<?php echo $tab == 'delay' ? 'sub-tab-content' : ''; ?>">延期申请</span>
+                  class="<?php
+                  echo $tab == 'xuke' ? 'sub-tab-content' : '';
+                  echo $canManageDianzixiaoneng == true?'':'hide';
+                  ?>"><?php //echo $departName; ?>许可受理</span>
+            <span id='yanshou-sub-link' class="<?php
+            echo $tab == 'yanshou' ? 'sub-tab-content' : '';
+            echo $canManageDianzixiaoneng == true?'':'hide';
+            ?>">许可验收</span>
+            <span id='fazheng-sub-link' class="<?php
+            echo $tab == 'fazheng' ? 'sub-tab-content' : '';
+            echo $canManageDianzixiaoneng == true?'':'hide';
+            ?>">审批发证</span>
+            <span id='delay-sub-link' class="<?php
+            echo $tab == 'delay' ? 'sub-tab-content' : '';
+            echo $canManageDianzixiaoneng == true?'':'hide';
+            ?>">延期申请</span>
         </div>
         <div class="clearFloat"></div>
     </div>
     <?php
-    include('xukeshouli.php');
-    include('xukeyanshou.php');
-    include('xukefazheng.php');
+        include('xukeshouli.php');
+        include('xukeyanshou.php');
+        include('xukefazheng.php');
     include('allxuke.php');
     include('delayApply.php');
     include('handleModal.php');

@@ -9,14 +9,14 @@
             </div>
             <div class="modal-body">
                 <form role="form">
-                    <input type="hidden" id="xuke-task-id">
-                    <input type="hidden" id="xuke-apply-id">
+                    <input type="hidden" id="xuke-handle-task-id">
+                    <input type="hidden" id="xuke-handle-apply-id">
 
                     <div class="form-group">
                         <label class="control-label">
                              延期原因:
                         </label>
-                        <textarea id="xuke-delay-apply-detail" class="form-control" roww="4" readonly></textarea>
+                        <textarea id="xuke-handle-delay-apply-detail" class="form-control" roww="4" readonly></textarea>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-2">
@@ -24,20 +24,33 @@
                                  申请延期:
                             </label>
                         </div>
+                        <div class="col-sm-4">
+                            <span id="xuke-handle-delay-apply-day" class="control-label"></span>
+                            <label class="control-label">
+                                天 
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label class="control-label">
+                                 同意延期:
+                            </label>
+                        </div>
 
-                        <div class="col-sm-3">
-                        <span id="xuke-delay-apply-day" class="form-control"></span>
+                        <div class="col-sm-2">
+                            <input id="xuke-handle-delay-apply-agree-day" class="form-control">
                         </div>
                         <div class="col-sm-1">
-                        <label class="control-label">
-                            天 
-                        </label>
+                            <label class="control-label">
+                                天 
+                            </label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-4">
-                            <span class="bg-danger" id="xuke-apply-error"> </span>
-                            <span class="bg-success" id="xuke-apply-info">  </span>
+                        <div class="col-sm-7">
+                            <span class="bg-danger" id="xuke-handle-apply-error"> </span>
+                            <span class="bg-success" id="xuke-handle-apply-info">  </span>
                         </div>
                     </div>
                 </form>

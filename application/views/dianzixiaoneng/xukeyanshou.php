@@ -40,7 +40,7 @@
                         <td class='dianzi-d6'> <?php echo transDate($item['complete_time']); ?> </td>
                         <td class='dianzi-d7'> <?php echo transDianziResult($item['result'],$item['sub_process']); ?> </td>
                         <td class='dianzi-d8'> <?php echo getLightStatus($item['light_status']); ?> </td>
-                    <td class='dianzi-d9'> <?php echo getDianziXukeOpt($item['id'],$item['task_id'],$item['sub_process'],$item['apply_type'],$item['dead_time']); ?> </td>
+                    <td class='dianzi-d9'> <?php echo getDianziXukeOpt($item['id'],$item['task_id'],$item['sub_process'],$item['apply_type'],$item['dead_time'],$isSelf); ?> </td>
                         </tr>
             <?php
             }

@@ -112,10 +112,10 @@ og.dianzixiaoneng= {
         $('#xukeDelayApplyModal').modal();
     },
     handleDelayApply: function (id, taskid,detail,applyDay) {
-        $('#xuke-task-id').val(taskid);
-        $('#xuke-apply-id').val(id);
-        $('#xuke-delay-apply-detail').val(detail);
-        $('#xuke-delay-apply-day').val(applyDay);
+        $('#xuke-handle-task-id').val(taskid);
+        $('#xuke-handle-apply-id').val(id);
+        $('#xuke-handle-delay-apply-detail').val(detail);
+        $('#xuke-handle-delay-apply-day').html(applyDay);
         $('#xukeHandleDelayApplyModal').modal();
     },
 
@@ -178,14 +178,14 @@ og.dianzixiaoneng= {
      * @param task_id
      */
     agreeDelayApply: function () {
-        var id = $('#xuke-apply-id').val();
-        var task_id = $('#xuke-task-id').val();
+        var id = $('#xuke-handle-apply-id').val();
+        var task_id = $('#xuke-handle-task-id').val();
         var parameters = {
-            agreeDay: $.trim($('#xuke-delay-apply-agree-day').val()),
+            agreeDay: $.trim($('#xuke-handle-delay-apply-agree-day').val()),
             taskId: task_id
         };
         if (!$.isNumeric(parameters.agreeDay)) {
-            $('#xuke-apply-error').html('同意延期的天数必须是数字');
+            $('#xuke-handle-apply-error').html('同意延期的天数必须是数字');
             return;
         }
         var url = og.getUrl('dianzixiaoneng', 'agree_delay_apply', {id: id});
@@ -203,6 +203,7 @@ og.dianzixiaoneng= {
             },
             scope: this
         });
+        $('#xukeHandleDelayApplyModal').modal('hide');
     },
 
     /**
@@ -211,8 +212,8 @@ og.dianzixiaoneng= {
      * @param task_id
      */
     disagreeDelayApply: function () {
-        var id = $('#xuke-apply-id').val();
-        var task_id = $('#xuke-task-id').val();
+        var id = $('#xuke-handle-apply-id').val();
+        var task_id = $('#xuke-handle-task-id').val();
         var url = og.getUrl('dianzixiaoneng', 'disagree_delay_apply', {id: id});
         og.openLink(url, {
             method: 'POST',
@@ -228,12 +229,13 @@ og.dianzixiaoneng= {
             },
             scope: this
         });
+        $('#xukeHandleDelayApplyModal').modal('hide');
     },
 
     cancelDelayApply: function (id) {
         Ext.MessageBox.confirm('撤回申请', '您确认要撤回该申请吗？', function (btn) {
             if (btn == 'yes') {
-                dianzixiaoneng.doCancelDelayApply(id);
+                og.dianzixiaoneng.doCancelDelayApply(id);
             }
         });
     },

@@ -72,7 +72,13 @@ class DianzixiaonengController extends ApplicationController
         if ($this->depart_id == $this->YAOXIE2KE_ID) {
             tpl_assign('isYaoxie2', true);
         }
-        $tab = 'xuke';
+        if ($this->depart_id == $this->YAOXIE2KE_ID
+            ||$this->depart_id == $this->LIUTONG1KE_ID
+            ||$this->depart_id == $this->LIUTONG2KE_ID
+        ) {
+            tpl_assign('canManageDianzixiaoneng', true);
+        }
+        $tab = 'all';
         if (isset($_GET['tab'])) {
             $tab = $_GET['tab'];
         }
@@ -217,10 +223,10 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                 light_status=1
                 where id=$taskid";
         $rows = DB::executeAll($sql);
-        $sql = "select id,area,type  from og_dianzixiaoneng
+        $sql = "select id,apply_area,apply_type  from og_dianzixiaoneng
                 where id=$xukeid";
         $rows = DB::executeAll($sql);
-        $area =$rows[0]['area']; 
+        $area =$rows[0]['apply_area'];
 
         // 被拒绝
         if ($res == 0) {
@@ -311,16 +317,16 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
                 // 创建相应的待办事项 条件审核
                 $dead_time = $this->getDeadTime(1);
                 $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
-           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
-            1," . $id . ",now(),'" . $dead_time . "');";
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`,assign_to_departid) VALUES (
+            1," . $id . ",now(),'" . $dead_time . "',$this->YAOXIE2KE_ID);";
                 $rows = DB::executeAll($sql);
             } else {
 
                 // 创建相应的待办事项 条件审核
                 $dead_time = $this->getLiansuoDeadTime(21);
                 $sql = "INSERT INTO `" . TABLE_PREFIX . "dianzixiaoneng_task` (
-           `sub_process`,  `apply_id`, `create_time`, `dead_time`) VALUES (
-            21," . $id . ",now(),'" . $dead_time . "');";
+           `sub_process`,  `apply_id`, `create_time`, `dead_time`,assign_to_departid) VALUES (
+            21," . $id . ",now(),'" . $dead_time . "',$this->YAOXIE2KE_ID);";
                 $rows = DB::executeAll($sql);
             }
             DB::commit();
@@ -475,19 +481,19 @@ where x.id=y.apply_id and x.process!=0 and y.result=3'; // 0代表已经被拒�
         DB::beginWork();
         $res = array();
         //药械二科
-        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->YAOXIE2KE_ID;
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->YAOXIE2KE_ID." and status=0";
         $rows = DB::executeAll($sql);
         $res[0]['depart_id'] =$this->YAOXIE2KE_ID;
         $res[0]['depart_name'] ='药械二科';
         $res[0]['apply_num'] =$rows [0]['count'];
 
-        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG1KE_ID;
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG1KE_ID." and status=0";
         $rows = DB::executeAll($sql);
         $res[1]['depart_id'] =$this->LIUTONG1KE_ID;
         $res[1]['depart_name'] ='流通监管一科';
         $res[1]['apply_num'] =$rows [0]['count'];
 
-        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG2KE_ID;
+        $sql = "SELECT count(id) as count from og_dianzixiaoneng_task_delay_apply where depart_id=".$this->LIUTONG2KE_ID." and status=0";
         $rows = DB::executeAll($sql);
         $res[2]['depart_id'] =$this->LIUTONG2KE_ID;
         $res[2]['depart_name'] ='流通监管二科';
@@ -565,7 +571,7 @@ where id = $taskId";
         $id = get_id();
         DB::beginWork();
         $sql = "update `" . TABLE_PREFIX . "dianzixiaoneng_task_delay_apply` set
-        status=2 where id=$id";
+        status=2 , handle_time=now() where id=$id";
         DB::execute($sql);
         DB::commit();
         ajx_current("empty");

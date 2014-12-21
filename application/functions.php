@@ -1313,24 +1313,26 @@ function transDate($dateTime)
     return $j[0];
 }
 
-function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type,$dead_time) {
+function getDianziXukeOpt($apply_id,$task_id,$sub_process,$type,$dead_time,$isSelf) {
     $userRole = logged_user()->getUserRole();
     $str = "<a onclick='og.dianzixiaoneng.view($apply_id)'>查看</a>";
-    if ($sub_process == 1 || $sub_process ==5 ||
-        $sub_process == 7
-        || $sub_process ==8
-        || $sub_process ==3
-        || $sub_process ==21
-        || $sub_process ==25
-    ) {
-        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.handleTask($task_id,$apply_id,$sub_process,$type)'>处理</a>";
-    } else {
-        $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process,$type)'>完成</a>";
-    }
+    if ($isSelf == 'self') {
+        if ($sub_process == 1 || $sub_process ==5 ||
+            $sub_process == 7
+            || $sub_process ==8
+            || $sub_process ==3
+            || $sub_process ==21
+            || $sub_process ==25
+        ) {
+            $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.handleTask($task_id,$apply_id,$sub_process,$type)'>处理</a>";
+        } else {
+            $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.finishTask($task_id,$apply_id,$sub_process,$type)'>完成</a>";
+        }
         // 过期的任务不能再申请延期
         if (strtotime($dead_time) > time()) {
             $str .= "&nbsp;&nbsp;<a onclick='og.dianzixiaoneng.showDelayApply($task_id)'>申请延期</a>";
         }
+    }
     return $str;
 }
 ?>

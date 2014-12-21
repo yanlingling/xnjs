@@ -86,14 +86,19 @@ function getoptcontent_dzxn($status, $id, $task_id, $isSelf,$detail,$hopeDay)
 // 只有局长有处理延期申请的权限
     if ($userRole == '局长') {
         if ($status == 0) {
-            $str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.handleDelayApply(' . $id . ',' . $task_id . ',' . $detail. ',' . $hopeDay. ')">处理申请</a>';
+            $str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.handleDelayApply(' . $id . ',' . $task_id . ',\'' . $detail. '\',' . $hopeDay. ')">处理申请</a>';
         }
+        else {
+            $str = '-';
+        }
+
         return $str;
     } else {
-        $str = '<a onclick="og.dianzixiaoneng.viewDelayApplyDetail(' . $id . ',' . $status . ',' . $detail. ',' . $hopeDay. ')">查看</a>';
+        $str = '<a onclick="og.dianzixiaoneng.viewDelayApplyDetail(' . $id . ',' . $status . ',\'' . $detail. '\',' . $hopeDay. ')">查看</a>';
 // 还未处理的请求可以撤回
         if ($status == 0 && $isSelf == 'self') {
             $str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.cancelDelayApply(' . $id . ')">撤回</a>';
+            //$str .= '&nbsp;&nbsp;<a onclick="og.dianzixiaoneng.cancelDelayApply(' . $id . ')">撤回</a>';
         }
         return $str;
     }
