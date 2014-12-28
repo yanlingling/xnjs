@@ -91,7 +91,7 @@ input.x-tree-node-cb {
     background: transparent url(../../images/16x16/all_16_16_sprite.png) no-repeat scroll 0 -3535px !important;
 }
 .x-form-field-wrap .x-form-trigger{
-    top: 3px;
+    top: 1px;
 }
 ul.x-tab-strip li {
     height: 29px;
