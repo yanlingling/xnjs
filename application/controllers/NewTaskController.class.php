@@ -48,11 +48,18 @@ class NewtaskController extends ApplicationController
             WHERE y.depart_id = z.depart_id
             AND z.id =" . logged_user()->getId();
         }
+        $year = '2014';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+
+        tpl_assign('year', $year);
 
         $rows1 = DB::executeAll($sql);
         DB::commit();
         tpl_assign('departInfo', $rows1);
         $depart_id = $rows1[0]['depart_id'];
+        tpl_assign('departId', $depart_id);
         $depart_name = $rows1[0]['depart_name'];
         $manager_id = $rows1[0]['manager_id'];
         $isSelf = 'other';
@@ -148,7 +155,7 @@ AND x.depart_id = y.depart_id ";
             FROM og_project_tasks AS x, og_users AS z, og_department AS y
             WHERE x.assigned_to_departid = y.depart_id
             AND x.assigned_to_departid  = $depart_id
-            AND z.id  = y.manager_id  and x.deleted = !1
+            AND z.id  = y.manager_id  and x.deleted = !1 and year(due_date)=$year
             order by x.light_status DESC,x.due_date ASC";
 
         $rows = DB::executeAll($sql);

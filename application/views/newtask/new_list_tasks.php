@@ -20,7 +20,7 @@ foreach ($departInfo as $item) {
 }
 ?>
 <div id="task-list-main">
-<span id="depart_id" class="hide"><?php echo $departId ?></span>
+<input id="depart-id" type="hidden" value="<?php echo $departId ;?>"/>
 <span id="depart_name" class="hide"><?php echo $departName ?></span>
 <span id="task_sub_tab" class="hide"><?php echo $tab ?></span>
 
@@ -76,9 +76,14 @@ foreach ($departInfo as $item) {
 
         </table>
     </div>
-    <span class="new-button" id='add-task' onclick="og.taskList.addTaskClick()">新建岗位职责</span>
-    <span class="new-button" id='view-all-task' onclick="og.taskList.viewAllTaskClick()">查看全局任务</span>
-
+    <div style="position: relative;height: 40px;">
+        <span class="new-button" id='add-task' onclick="og.taskList.addTaskClick()">新建岗位职责</span>
+        <span class="new-button" id='view-all-task' onclick="og.taskList.viewAllTaskClick()">查看全局任务</span>
+        <div style="display: inline-block;position: absolute;right: 10px;top:10px">
+            年份:
+            <span id="task-year-selector" style="display: inline-block"></span>
+        </div>
+    </div>
     <div class="table-header">
         <table width='100%'>
             <tr>
@@ -861,4 +866,5 @@ if (count($lateTask) > 0) {
         var formatDate = myDate.getFullYear() + '-' + (myDate.getMonth() + 1) + '-' + myDate.getDate();
         return formatDate;
     }
+    og.taskList.initYear(<?php echo $year;?>);
 </script>
