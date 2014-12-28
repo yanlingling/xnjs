@@ -85,7 +85,7 @@ and x.comment_status_fujuzhang=0" ;
             $rows = DB::executeAll($sql);
             tpl_assign('toCommentCount', $rows[0]['count']);
         }
-        else if (logged_user()->getUserRole() == '科长'){
+        else if (logged_user()->getUserRole() == '科长' and $depart_name=='效能办'){
             $sql = "select count(*)  as count from og_project_tasks as x
 where x.comment_status_xiaoneng=0
 and x.light_status=1
