@@ -7,7 +7,8 @@
 og.out = og.out || {};
 og.out = {
     editClickHandler: function(){
-        $('.kaoqin-float').hide();
+        //$('.kaoqin-float').hide();
+        $('.kaoqin-float').addClass('hide');
         var value = $(this).prev().html();
         $(this).parent().find('.kaoqin-float li').removeClass('current');
         $(this).parent().find('.kaoqin-float li').each(function(){
@@ -15,7 +16,7 @@ og.out = {
                  $(this).addClass('current')
              }
         });
-        $(this).parent().find('.kaoqin-float').show(100);
+        $(this).parent().find('.kaoqin-float').removeClass('hide');
 
     },
 

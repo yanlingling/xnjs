@@ -80,7 +80,8 @@ foreach ($departInfo as $item) {
         <span class="new-button" id='add-task' onclick="og.taskList.addTaskClick()">新建岗位职责</span>
         <span class="new-button" id='view-all-task' onclick="og.taskList.viewAllTaskClick()">查看全局任务</span>
         <div style="right: 10px; position: absolute; top: 12px;">
-            年份:<div id="task-year-selector" style="display: inline-block"></div>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2014
         </div>
     </div>
     <div class="table-header">

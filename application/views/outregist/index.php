@@ -100,7 +100,7 @@ function getUserLine($item){
     setInterval(og.out.updateStatus,1000*60);
     // 点击控件区域以外的地方，消失选项列表
     $('body').click(function () {
-        $('.kaoqin-float').hide();
+        $('.kaoqin-float').addClass('hide');
     });
     $('.kaoqin-float').click(function (e) {
         e.stopPropagation();
