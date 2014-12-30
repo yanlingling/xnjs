@@ -33,44 +33,83 @@ require_javascript("og/jquery.min.js");
             if (panel = Ext.get('tabs-panel__carmanage-panel')) panel.setDisplayed(false);
         }
     }
-    og.index.openTask = function () {
+
+    og.index.openTaskModule = function () {
         og.index.showTaskModule(true);
         og.index.showZuofengModule(false);
         og.index.showReportModule(false);
         og.index.showLianzhengModule(false);
         og.index.showDianzixiaonengModule(false);
-        Ext.getCmp('tabs-panel').setActiveTab('tasks-panel');
     }
-    og.index.openLianzheng = function () {
+    og.index.openLianzhengModule = function () {
         og.index.showTaskModule(false);
         og.index.showZuofengModule(false);
         og.index.showReportModule(false);
         og.index.showDianzixiaonengModule(false);
         og.index.showLianzhengModule(true);
-        Ext.getCmp('tabs-panel').setActiveTab('lianzhengxuexi-panel');
     }
-    og.index.openZuofeng = function () {
+    og.index.openZuofengModule = function () {
         og.index.showTaskModule(false);
         og.index.showLianzhengModule(false);
         og.index.showReportModule(false);
         og.index.showDianzixiaonengModule(false);
         og.index.showZuofengModule(true);
-        Ext.getCmp('tabs-panel').setActiveTab('outregist-panel');
     }
-    og.index.openJianbao= function () {
+    og.index.openJianbaoModule = function () {
         og.index.showTaskModule(false);
         og.index.showLianzhengModule(false);
         og.index.showZuofengModule(false);
         og.index.showDianzixiaonengModule(false);
         og.index.showReportModule(true);
-        Ext.getCmp('tabs-panel').setActiveTab('report-panel');
     }
-    og.index.openDianzixiaoneng = function () {
+    og.index.openDianzixiaonengModule = function () {
         og.index.showTaskModule(false);
         og.index.showLianzhengModule(false);
         og.index.showZuofengModule(false);
         og.index.showReportModule(false);
         og.index.showDianzixiaonengModule(true);
+    }
+
+
+    og.index.openTask = function () {
+        og.index.openTaskModule();
+        Ext.getCmp('tabs-panel').setActiveTab('tasks-panel');
+    }
+    og.index.openLianzheng = function () {
+        og.index.openLianzhengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('lianzhengxuexi-panel');
+    }
+    og.index.openFengxiandian= function () {
+        og.index.openLianzhengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('fengxiandian-panel');
+    }
+    og.index.openZuofeng = function () {
+        og.index.openZuofengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('outregist-panel');
+    }
+    og.index.openCar = function () {
+        og.index.openZuofengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('carmanage-panel');
+    }
+    og.index.openQingxiaojia= function () {
+        og.index.openZuofengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('qingxiaojia-panel');
+    }
+    og.index.openZhibanzhang= function () {
+        og.index.openZuofengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('zhibanzhang-panel');
+    }
+    // 打开文件传阅
+    og.index.openFile= function () {
+        og.index.openZuofengModule();
+        Ext.getCmp('tabs-panel').setActiveTab('file-panel');
+    }
+    og.index.openJianbao= function () {
+        og.index.openJianbaoModule();
+        Ext.getCmp('tabs-panel').setActiveTab('report-panel');
+    }
+    og.index.openDianzixiaoneng = function () {
+        og.index.openDianzixiaonengModule();
         Ext.getCmp('tabs-panel').setActiveTab('dianzixiaoneng-panel');
     }
 </script>
@@ -286,11 +325,11 @@ require_javascript("og/jquery.min.js");
                  break;
              case 'car':
                  url = og.getUrl('carmanage', 'index');
-                 og.index.openZuofeng();
+                 og.index.openCar();
                  break;
              case 'qingxiaojia':
                  url =  og.getUrl('qingxiaojia', 'index',{'tab': 'handle'});;
-                 og.index.openZuofeng();
+                 og.index.openQingxiaojia();
               break;
              case 'taskDelay':
                 url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');;
@@ -298,7 +337,7 @@ require_javascript("og/jquery.min.js");
              break;
              case 'file':
                  url = og.getUrl('file', 'index');;
-                 og.index.openZuofeng();
+                 og.index.openFile();
                  break;
              case 'learning':
                  url = og.getUrl('lianzhengxuexi', 'index');
@@ -306,11 +345,11 @@ require_javascript("og/jquery.min.js");
              break;
              case 'risk':
                  url = og.getUrl('fengxiandian', 'index')
-                 og.index.openLianzheng();
+                 og.index.openFengxiandian();
              break;
              case 'duty':
                  url = og.getUrl('zhibanzhang', 'index')
-                 og.index.openZuofeng();
+                 og.index.openZhibanzhang();
                  break;
          }
         og.openLink(url, {});
