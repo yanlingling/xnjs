@@ -174,7 +174,7 @@ require_javascript("og/jquery.min.js");
                     <h1 class="title">电子效能监察
                     </h1>
                     <div class="description">
-                        电子效能监察....
+                        公开、透明、高效
                     </div>
                 </div>
                 <div class="left">
@@ -274,6 +274,7 @@ require_javascript("og/jquery.min.js");
          switch (des){
              case 'task':
                  url = og.getUrl('newtask', 'new_list_tasks');
+                 og.index.openTask();
                  break;
              case 'comment':
                  if (og.loggedUser.userRole == '科长') {
@@ -281,27 +282,35 @@ require_javascript("og/jquery.min.js");
                  } else {
                      url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');
                  }
+                 og.index.openTask();
                  break;
              case 'car':
                  url = og.getUrl('carmanage', 'index');
+                 og.index.openZuofeng();
                  break;
              case 'qingxiaojia':
                  url =  og.getUrl('qingxiaojia', 'index',{'tab': 'handle'});;
+                 og.index.openZuofeng();
               break;
              case 'taskDelay':
                 url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');;
+                 og.index.openTask();
              break;
              case 'file':
                  url = og.getUrl('file', 'index');;
+                 og.index.openZuofeng();
                  break;
              case 'learning':
-                 url = og.getUrl('lianzhengxuexi', 'index')
+                 url = og.getUrl('lianzhengxuexi', 'index');
+                 og.index.openLianzheng();
              break;
              case 'risk':
                  url = og.getUrl('fengxiandian', 'index')
+                 og.index.openLianzheng();
              break;
              case 'duty':
                  url = og.getUrl('zhibanzhang', 'index')
+                 og.index.openZuofeng();
                  break;
          }
         og.openLink(url, {});

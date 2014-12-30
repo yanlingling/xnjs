@@ -48,7 +48,7 @@ class NewtaskController extends ApplicationController
             WHERE y.depart_id = z.depart_id
             AND z.id =" . logged_user()->getId();
         }
-        $year = '2014';
+        $year = '2015';
         if (isset($_GET['year'])) {
             $year = $_GET['year'];
         }
@@ -242,12 +242,21 @@ AND x.depart_id = y.depart_id ";
             AND light_status =1 and comment_status_fujuzhang=0 and comment_status_xiaoneng!=0
             ";
             }
-            if (logged_user()->getUserRole() == '局长') {
+            else if (logged_user()->getUserRole() == '局长') {
                 $sql3 = "SELECT count(*) as count
             FROM  " . TABLE_PREFIX . "project_tasks as y
             WHERE  `assigned_to_departid` =$dep_id
             and y.deleted!=1
             AND light_status =1 and comment_status_juzhang=0 and comment_status_fujuzhang!=0
+            ";
+            }
+            // 效能办可以查看全局任务
+            else {
+                $sql3 = "SELECT count(*) as count
+            FROM  " . TABLE_PREFIX . "project_tasks as y
+            WHERE  `assigned_to_departid` =$dep_id
+            and y.deleted!=1
+            AND light_status =1 and comment_status_xiaoneng=0 and comment_status_xiaoneng!=-1
             ";
             }
             $rows3 = DB::executeAll($sql3);

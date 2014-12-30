@@ -1,6 +1,6 @@
 DROP PROCEDURE IF EXISTS `dianziScore`;
 delimiter //
-CREATE PROCEDURE dianziScore(IN departid INT,IN sub_processes varchar(50))
+CREATE PROCEDURE dianziScore(IN departid INT)
 
 BEGIN
 DECLARE Done  INT DEFAULT  0;
