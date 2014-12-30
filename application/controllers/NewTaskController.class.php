@@ -194,7 +194,7 @@ AND x.depart_id = y.depart_id ";
         // 查询岗位职责列表
         DB::beginWork();
         // 局长查询科室的汇总
-        $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
+        $sql = "SELECT y.depart_id,y.depart_name, y.xiaoneng_score as score, MAX( x.light_status ) AS light_status
             FROM " . TABLE_PREFIX . "project_tasks AS x, "
             . TABLE_PREFIX . "department AS y
             WHERE x.`assigned_to_departid` = y.depart_id and x.deleted=0
@@ -208,7 +208,7 @@ AND x.depart_id = y.depart_id ";
              GROUP BY x.`assigned_to_departid`";*/
         // 副局长只能看到分管科室的
         if (logged_user()->getUserRole() == '副局长') {
-            $sql = "SELECT y.depart_id,y.depart_name, y.score, MAX( x.light_status ) AS light_status
+            $sql = "SELECT y.depart_id,y.depart_name,y.xiaoneng_score as score, MAX( x.light_status ) AS light_status
                 FROM " . TABLE_PREFIX . "project_tasks AS x, " . TABLE_PREFIX . "department AS y, " . TABLE_PREFIX . "users AS z
                 WHERE x.`assigned_to_departid` = y.depart_id "
                 . "and  FIND_IN_SET(z.id, y.fujuzhang_id) !=0 and x.deleted=0
