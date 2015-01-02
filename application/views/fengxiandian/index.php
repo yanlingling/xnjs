@@ -6,6 +6,7 @@ $genid = gen_id();
 ?>
 <div>
     <div class="sub-tab">
+        <input id="user-id" type="hidden" value="<?php echo $uid ;?>"/>
         <span id='my-risk-tab'
               class="<?php echo $tab == 'person' ? 'sub-tab-content' : ''; ?>  ?>"><?php //echo $departName; ?>
             个人风险点</span>
@@ -23,6 +24,10 @@ $genid = gen_id();
         echo $tab == 'question' ? 'sub-tab-content' : '';
         echo $canCreateRisk == 0 ? 'hide' : ''; ?>">
              风险点问卷</span>
+        <div class='year-select-area'>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.risk.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.risk.onselectyear()">&nbsp;2014
+        </div>
     </div>
     <div class="clearFloat"></div>
 </div>
@@ -242,9 +247,14 @@ function getRiskOptContent($status, $riskId, $contentId, $isSelf)
             $('#risk-content-tab-content').removeClass('hide');
         }
     }
+    // 用户点击过tab的切换，按用户点击的来
+    if (typeof og.riskSubTab != 'undefined') {
+        showSubTab($('#' + og.riskSubTab ));
+    }
     $('.sub-tab span').click(function () {
         var ele = $(this);
-        og.taskSubTab = ele.attr('id');
+        og.riskSubTab = ele.attr('id');
         showSubTab(ele);
     });
+    og.risk && og.risk.initYear(<?php echo $year;?>);
 </script>

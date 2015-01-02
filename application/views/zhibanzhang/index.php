@@ -2,13 +2,14 @@
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/duty/duty.js');
 require_javascript('og/tasks/main.js');
-
+require_javascript("og/common.js");
 require_javascript("og/DateField.js");
 require_javascript("og/jquery.min.js");
 $genid = gen_id();
 ?>
 <div>
     <div class="sub-tab">
+        <input id="user-id" type="hidden" value="<?php echo $uid ;?>"/>
         <span id='my-learning-tab'
               class="sub-tab-content sub-tab-span"><?php //echo $departName; ?>
             日志查看
@@ -27,6 +28,10 @@ $genid = gen_id();
             </span>
         </div>
 
+        <div class='year-select-area'>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.duty.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.duty.onselectyear()">&nbsp;2014
+        </div>
         <span  class=" <?php
         // 日志还没创建的时候，任何人都可以创建
         if ($duty_been_created == 0) {
@@ -323,9 +328,14 @@ $genid = gen_id();
     }
     $('.sub-tab .sub-tab-span').click(function () {
         var ele = $(this);
-        og.taskSubTab = ele.attr('id');
+        og.zhibanzhangSubTab = ele.attr('id');
         showSubTab(ele);
     });
+    // 用户点击过tab的切换，按用户点击的来
+    if (typeof og.zhibanzhangSubTab != 'undefined') {
+        showSubTab($('#' + og.zhibanzhangSubTab ));
+    }
+    og.duty && og.duty.initYear(<?php echo $year;?>);
 </script>
 <?php
 function buildDutyStatus ($isCommit){

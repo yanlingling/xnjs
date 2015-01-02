@@ -22,8 +22,8 @@ $genid = gen_id();
         echo ($canCreateLearning == 1 && $selfView) ? '' : 'hide'; ?>">
             学习内容</span>
         <div class='year-select-area'>
-            <input type="radio" value="2015" name="task-year-selector" onclick="og.learning.onselectyear()">&nbsp;2015
-            <input type="radio" value="2014" name="task-year-selector" onclick="og.learning.onselectyear()">&nbsp;2014
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.risk.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.risk.onselectyear()">&nbsp;2014
         </div>
     </div>
 

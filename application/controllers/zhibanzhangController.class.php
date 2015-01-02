@@ -45,11 +45,15 @@ class ZhibanzhangController extends ApplicationController
         tpl_assign('userRole', logged_user()->getUserRole());
         //$_GET['date'] ||
         DB::beginWork();
+
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
+
         $sql = "SELECT x.id,cur_date,y.username,x.create_time,last_modify_time,x.isCommited
-            FROM  `og_duty` as x ,og_users as y where x.user_id=y.id";
-        /*        if (isset($_GET['date'])) {
-                    $sql .= ' and date=' . $_GET['date'];
-                }*/
+            FROM  `og_duty` as x ,og_users as y where x.user_id=y.id and YEAR (x.create_time)=$year";
         if (isset($_POST['condition'])) {
             if (preg_match("/(\d+)-(\d+)-(\d+)/", $_POST['condition'])) {
                 $sql .= ' and (cur_date="' . $_POST['condition'] . '")';
@@ -80,20 +84,20 @@ class ZhibanzhangController extends ApplicationController
                 tpl_assign('is_on_duty', 0);
             }
         }
-        $depart_tongji = $this::getMostClean('most_clean_department');
+        $depart_tongji = $this::getMostClean('most_clean_department',$year);
         tpl_assign('depart_tongji', array_sorts($depart_tongji, 'count', 'desc'));
-        $floor_tongji = $this::getMostClean('most_clean_floor');
+        $floor_tongji = $this::getMostClean('most_clean_floor',$year);
         tpl_assign('floor_tongji', array_sorts($floor_tongji, 'count', 'desc'));
-        $chuqin_tongji = $this::getChuqin();
+        $chuqin_tongji = $this::getChuqin($year);
         tpl_assign('chuqin_tongji', array_sorts($chuqin_tongji, 'count4', 'desc'));
     }
 
-    function  getChuqin()
+    function  getChuqin($year)
     {
         // 计算卫生最佳科室
         $sql = "SELECT id,morning_absent1,morning_absent2,morning_absent3,morning_absent4,morning_absent5,
                           noon_absent1,noon_absent2,noon_absent3,noon_absent4,noon_absent5
-            FROM  `og_duty`";
+            FROM  `og_duty` where year(create_time)=$year";
 
         $rows = DB::executeAll($sql);
         $res1 = array(0);
@@ -160,12 +164,12 @@ class ZhibanzhangController extends ApplicationController
         return $rows;
     }
 
-    function getMostClean($type)
+    function getMostClean($type,$year)
     {
 
         // 计算卫生最佳科室
         $sql = "SELECT id," . $type . "
-            FROM  `og_duty`";
+            FROM  `og_duty` where year(create_time)=$year";
 
         $rows = DB::executeAll($sql);
         $res = array(0);

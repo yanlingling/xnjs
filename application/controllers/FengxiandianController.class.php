@@ -41,6 +41,13 @@ class FengxiandianController extends ApplicationController
             tpl_assign('selfView', false);
         }
         tpl_assign('role', logged_user()->getUserRole());
+        tpl_assign('uid', $uid);
+
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
 
         // 查询用户当前学习情况汇总
         DB::beginWork();
@@ -48,7 +55,7 @@ class FengxiandianController extends ApplicationController
         $sql = "SELECT `status` , COUNT( `status` ) AS light_count, z.score, canCreateRisk, y.content_id
                 FROM `og_risk_learning` AS y, og_users AS z
                 WHERE z.id =$uid
-                AND y.user_id = z.id
+                AND y.user_id = z.id and YEAR (y.due_date) = $year
                 GROUP BY STATUS
                 ORDER BY STATUS ASC ";
         $rows = DB::executeAll($sql);
@@ -67,7 +74,7 @@ class FengxiandianController extends ApplicationController
             FROM  `og_risk_content` AS x,  `og_risk_learning` AS y, og_users AS z
             WHERE z.id =" . $uid . "
             AND y.user_id =z.id
-            AND x.id = y.content_id
+            AND x.id = y.content_id and YEAR (y.due_date) = $year
             order by y.status DESC,y.due_date ASC";
 
         $rows = DB::executeAll($sql);
@@ -83,7 +90,7 @@ class FengxiandianController extends ApplicationController
         if ($canCreateRisk) {
             // 查学习内容数据，是学习内容本身
             $sql = "SELECT *
-            FROM  `og_risk_content` AS x
+            FROM  `og_risk_content` AS x where YEAR (x.due_date) = $year
             order by x.due_date ASC";
             $rows = DB::executeAll($sql);
             DB::commit();

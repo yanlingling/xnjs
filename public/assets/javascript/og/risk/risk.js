@@ -33,6 +33,21 @@ og.risk = {
         $('#questionNum').val(num);
     },
 
+    onselectyear: function () {
+        var year = og.common.getCheckboxValue('task-year-selector');
+        var url = og.getUrl('fengxiandian', 'index',
+            {
+                userid: $('#user-id').val(),
+                year: year
+            });
+        og.openLink(url, {});
+    },
+
+    initYear: function (year) {
+        $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+        return;
+    },
+
     /**
      * 提交问卷
      */
@@ -83,9 +98,9 @@ og.risk = {
         else if ($('#risk-date-picker').val() == '') {
             return '请输入时间'
         }
-/*        if (!og.common.lateThenNow($('#risk-date-picker').val())) {
-            return '到期时间必须大于当前时间';
-        }*/
+        /*        if (!og.common.lateThenNow($('#risk-date-picker').val())) {
+         return '到期时间必须大于当前时间';
+         }*/
         var res = '';
         $('.risk-question').each(function (index) {
             var index = index + 1;

@@ -103,6 +103,21 @@ og.duty = {
         }
     },
 
+    onselectyear: function () {
+        var year = og.common.getCheckboxValue('task-year-selector');
+        var url = og.getUrl('zhibanzhang', 'index',
+            {
+                userid: $('#user-id').val(),
+                year: year
+            });
+        og.openLink(url, {});
+    },
+
+    initYear: function (year) {
+        $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+        return;
+    },
+
     showError: function (tip) {
         $('#error-tip').html(tip);
         $('#error-tip').removeClass('hide');
@@ -119,7 +134,8 @@ og.duty = {
         }
     },
     beginSearch: function () {
-        var url = og.getUrl('zhibanzhang', 'index');
+        var year = og.common.getCheckboxValue('task-year-selector');
+        var url = og.getUrl('zhibanzhang', 'index', {year: year});
         og.openLink(url,
             {
                 post: {
