@@ -34,8 +34,14 @@ class KaoqinController extends ApplicationController
         }
         // $userRole = logged_user()->getUserRole();
 
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
+
         DB::beginWork();
-        $sql = "SELECT z.id,z.name,z.create_time FROM og_kaoqinducha_file AS z ";
+        $sql = "SELECT z.id,z.name,z.create_time FROM og_kaoqinducha_file AS z where  year(z.create_time)=$year ";
         if (isset($_POST['condition']) && $_POST['condition'] != '') {
             $sql .= ' and (z.name like "%' . $_POST['condition'] . '%")';
         }
@@ -55,7 +61,7 @@ class KaoqinController extends ApplicationController
         //纪律检查列表查询
 
         $sql = "SELECT x.id,jiancha_time,x.onDutyUser,y.username,x.create_time
-            FROM  `og_jilvjiancha` as x ,og_users as y where x.user_id=y.id";
+            FROM  `og_jilvjiancha` as x ,og_users as y where x.user_id=y.id and  year(x.create_time)=$year ";
         if (isset($_POST['condition'])) {
             if (preg_match("/(\d+)-(\d+)-(\d+)/", $_POST['condition'])) {
                 $sql .= ' and (cur_date="' . $_POST['condition'] . '")';

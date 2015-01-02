@@ -1,6 +1,7 @@
 <?php
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/kaoqinducha/kaoqinducha.js');
+require_javascript("og/common.js");
 require_javascript("og/jquery.min.js");
 $genid = gen_id();
 ?>
@@ -11,6 +12,10 @@ $genid = gen_id();
               class="<?php echo $tab == 'kaoqin' ? 'sub-tab-content' : ''; ?>"><?php //echo $departName; ?>考勤通报</span>
         &nbsp;| &nbsp;
         <span id='jilv-sub-link' class="<?php echo $tab == 'jilv' ? 'sub-tab-content' : ''; ?>">纪律检查</span>
+        <div class='year-select-area'>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.kaoqinducha.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.kaoqinducha.onselectyear()">&nbsp;2014
+        </div>
     </div>
     <div class="clearFloat"></div>
 </div>
@@ -178,8 +183,8 @@ function getKaoqinOpt($id, $canManage)
     }
     $('.sub-tab span').click(function () {
         var ele = $(this);
-
         og.kaoqinduchaSubTab = ele.attr('id');
         showSubTab(ele);
     });
+    og.kaoqinducha && og.kaoqinducha.initYear(<?php echo $year;?>);
 </script>

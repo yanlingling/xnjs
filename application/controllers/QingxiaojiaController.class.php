@@ -35,8 +35,23 @@ class QingxiaojiaController extends ApplicationController
 		
 		
        // $sql = "select * from og_holiday_apply as x where x.user_id=" . logged_user()->getId();
-		
-		$sql = "select hd.id,hd.reason,hd.detail,hd.begin_date,hd.end_date,hd.apply_status,hd.user_id,hd.create_time,hd.apply_time,hd.isHandled,hd.current_handler,hd.reject_userid,hd.apply_begin_date,hd.apply_end_date,group_concat(u.title,'同意时间','<br/>',hda.approve_begin_time,'到',hda.approve_end_time,'<br/>') approve from (select * from og_holiday_apply as x where x.user_id=".logged_user()->getId().") hd left join og_holiday_approve as hda on hda.holiday_id=hd.id left join og_users u on hda.user_id=u.id group by hd.id,hd.reason,hd.detail,hd.begin_date,hd.end_date,hd.apply_status,hd.user_id,hd.create_time,hd.apply_time,hd.isHandled,hd.current_handler,hd.reject_userid,hd.apply_begin_date,hd.apply_end_date
+
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
+
+		$sql = "select hd.id,hd.reason,hd.detail,hd.begin_date,
+        hd.end_date,hd.apply_status,hd.user_id,hd.create_time,hd.apply_time,
+        hd.isHandled,hd.current_handler,hd.reject_userid,hd.apply_begin_date,
+        hd.apply_end_date,
+        group_concat(u.title,'同意时间','<br/>',hda.approve_begin_time,'到',hda.approve_end_time,'<br/>') approve
+        from (select * from og_holiday_apply as x where year(x.create_time)=$year and  x.user_id=".logged_user()->getId().") hd
+        left join og_holiday_approve as hda on hda.holiday_id=hd.id left join
+         og_users u on hda.user_id=u.id group by hd.id,hd.reason,hd.detail,
+         hd.begin_date,hd.end_date,hd.apply_status,hd.user_id,hd.create_time,hd.apply_time,
+         hd.isHandled,hd.current_handler,hd.reject_userid,hd.apply_begin_date,hd.apply_end_date
 		 order by hd.create_time DESC";
 		
         DB::beginWork();
@@ -57,7 +72,7 @@ class QingxiaojiaController extends ApplicationController
 			hd.reject_userid,hd.apply_begin_date,hd.apply_end_date,hd.username,
 			group_concat(u.title,'同意时间','<br/>',hda.approve_begin_time,'到',hda.approve_end_time,'<br/>')
 			approve from
-			(select x.*,y.username from  og_users as y,og_holiday_apply as x where x.user_id=y.id) hd left join 
+			(select x.*,y.username from  og_users as y,og_holiday_apply as x where year(x.create_time)=$year and x.user_id=y.id) hd left join
 			og_holiday_approve as hda on hda.holiday_id=hd.id left join og_users u on 
 			hda.user_id=u.id group by 
 			hd.id,hd.reason,hd.detail,hd.begin_date,hd.end_date,hd.apply_status,
@@ -69,7 +84,7 @@ class QingxiaojiaController extends ApplicationController
 
             $sql = "select x.id,user_id,reason,username,begin_date,end_date,x.create_time,".
                 "detail,apply_status"
-                ." from  og_users as y,og_holiday_apply as x where x.user_id=y.id and x.apply_status=1 order by x.create_time DESC";
+                ." from  og_users as y,og_holiday_apply as x where  year(x.create_time)=$year and x.user_id=y.id and x.apply_status=1 order by x.create_time DESC";
             $rows = DB::executeAll($sql);
             $res = array();
             foreach ($rows as $item) {
@@ -115,7 +130,7 @@ class QingxiaojiaController extends ApplicationController
 				group_concat(u.title,'同意时间','<br/>',hda.approve_begin_time,'到',hda.approve_end_time,'<br/>')
 				approve from
 				(select x.*,y.username from og_users as y,og_holiday_apply as x
-					where x.current_handler=".logged_user()->getId()." and x.user_id= y.id
+					where  year(x.create_time)=$year and x.current_handler=".logged_user()->getId()." and x.user_id= y.id
 					and x.apply_status!='0'
 					and x.apply_status!='1'
 					and x.apply_status!='5'
@@ -139,7 +154,7 @@ class QingxiaojiaController extends ApplicationController
 				group_concat(u.title,'同意时间','<br/>',hda.approve_begin_time,'到',hda.approve_end_time,'<br/>')
 				approve from
 				(select x.*,y.username from og_users as y,og_holiday_apply as x
-							 where x.current_handler=".logged_user()->getId()." and x.user_id= y.id
+							 where  year(x.create_time)=$year and x.current_handler=".logged_user()->getId()." and x.user_id= y.id
 							 and x.apply_status!='0'
 							 and x.apply_status!='1'
 							 and x.apply_status!='5'

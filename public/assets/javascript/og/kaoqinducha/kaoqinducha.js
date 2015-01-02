@@ -9,6 +9,19 @@ og.kaoqinducha.addKaoqinducha = function () {
     var url = og.getUrl('kaoqin', 'add_kaoqinducha');
     og.openLink(url, {post: {}});
 };
+ og.kaoqinducha.onselectyear= function () {
+    var year = og.common.getCheckboxValue('task-year-selector');
+    var url = og.getUrl('kaoqin', 'index',
+        {
+            year: year
+        });
+    og.openLink(url, {});
+};
+
+ og.kaoqinducha.initYear= function (year) {
+    $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+    return;
+};
 og.kaoqinducha.submit = function (type, id) {
     var params = {};
     params.id = id;

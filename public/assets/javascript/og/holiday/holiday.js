@@ -22,6 +22,21 @@ og.holiday = {
         var url = og.getUrl('qingxiaojia', 'write_holiday_page', {opt: 'handle', id: id});
         og.openLink(url, {post: {}});
     },
+
+    onselectyear: function () {
+        var year = og.common.getCheckboxValue('task-year-selector');
+        var url = og.getUrl('qingxiaojia', 'index',
+            {
+                year: year
+            });
+        og.openLink(url, {});
+    },
+
+    initYear: function (year) {
+        $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+        return;
+    },
+
     submit: function (id) {
 		
         var param = {};

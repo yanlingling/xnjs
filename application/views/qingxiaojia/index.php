@@ -1,6 +1,7 @@
 <?php
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/holiday/holiday.js');
+require_javascript("og/common.js");
 require_javascript("og/jquery.min.js");
 $genid = gen_id();
 ?>
@@ -33,6 +34,10 @@ $genid = gen_id();
                  数据统计
             </span>
 
+            </div>
+            <div class='year-select-area'>
+                <input type="radio" value="2015" name="task-year-selector" onclick="og.holiday.onselectyear()">&nbsp;2015
+                <input type="radio" value="2014" name="task-year-selector" onclick="og.holiday.onselectyear()">&nbsp;2014
             </div>
         </div>
 
@@ -431,4 +436,5 @@ function getHandleOpt($status, $isHandled, $id,$start,$end,$uid,$approveBegin,$a
 			}
 		});
 	})
+    og.holiday&& og.holiday.initYear(<?php echo $year;?>);
 </script>
