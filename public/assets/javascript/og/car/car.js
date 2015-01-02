@@ -4,6 +4,19 @@ og.car = {
         var url = og.getUrl('carmanage', 'create_car_apply');
         og.openLink(url, {post: {}});
     },
+    onselectyear: function () {
+        var year = og.common.getCheckboxValue('task-year-selector');
+        var url = og.getUrl('carmanage', 'index',
+            {
+                year: year
+            });
+        og.openLink(url, {});
+    },
+
+    initYear: function (year) {
+        $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+        return;
+    },
     submitHandle: function (id) {
         var param = {};
         param.agree = og.common.getCheckboxValue('handle');

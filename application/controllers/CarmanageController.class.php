@@ -30,6 +30,11 @@ class CarmanageController extends ApplicationController
             return;
         }
         DB::beginWork();
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
         $sql = "SELECT y.depart_id,y.depart_name,y.manager_id
             FROM " . TABLE_PREFIX . "users AS z, " . TABLE_PREFIX . "department AS y
             WHERE y.depart_id = z.depart_id
@@ -37,8 +42,9 @@ class CarmanageController extends ApplicationController
 
         $row = DB::executeAll($sql);
         $depart_id = $row[0]['depart_id'];
-        $sql = "select * from og_car as y ,og_car_apply as x,og_department as z where x.depart_id=" . $depart_id . " and z.depart_id= x.depart_id and
-        x.car_id = y.id";
+        $sql = "select * from og_car as y ,og_car_apply as x,og_department as z
+                where x.depart_id=" . $depart_id . " and z.depart_id= x.depart_id and
+        x.car_id = y.id  and year(x.create_time)=$year";
 
         $rows = DB::executeAll($sql);
 
@@ -50,18 +56,19 @@ class CarmanageController extends ApplicationController
         tpl_assign('canManageCar', $canManageCar);
         if ($canManageCar || logged_user()->getUserRole() == '局长') {
             // 查所有的申请
-            $sql = "select * from  og_department as y,og_car as z, og_car_apply as x where x.depart_id  =y.depart_id and z.id = x.car_id order by x.create_time DESC";
+            $sql = "select * from  og_department as y,og_car as z, og_car_apply as x
+                where x.depart_id  =y.depart_id and z.id = x.car_id  and year(x.create_time)=$year order by x.create_time DESC";
             $rows = DB::executeAll($sql);
             tpl_assign('allCarApply', $rows);
             tpl_assign('userRole', logged_user()->getUserRole());
             if ($canManageCar) {
-                $sql = "select * from  og_department as y,og_car_apply as x where x.depart_id  =y.depart_id  and x.status = 0 order by x.create_time DESC";
+                $sql = "select * from  og_department as y,og_car_apply as x where x.depart_id  =y.depart_id  and x.status = 0 and year(x.create_time)=$year order by x.create_time DESC";
                 $rows = DB::executeAll($sql);
                 tpl_assign('toHandleApply', $rows);
             }
 
             // 科室用车数据统计
-            $car_data = $this::getCarData();
+            $car_data = $this::getCarData($year);
             tpl_assign('carData', $car_data);
 
         } else {
@@ -75,10 +82,10 @@ class CarmanageController extends ApplicationController
 
     }
 
-    function  getCarData() {
+    function  getCarData($year) {
         $sql = "SELECT x.depart_id,depart_name, COUNT( * ) as count
 FROM og_car_apply AS x, og_department AS y
-WHERE x.depart_id = y.depart_id and x.status = 1
+WHERE x.depart_id = y.depart_id and x.status = 1 and year(x.create_time)=$year
 GROUP BY depart_name";
         $row = DB::executeAll($sql);
         $i = 0;

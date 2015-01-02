@@ -2,6 +2,7 @@
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/car/car.js');
 require_javascript("og/jquery.min.js");
+require_javascript("og/common.js");
 $genid = gen_id();
 ?>
 <script>
@@ -58,6 +59,10 @@ $genid = gen_id();
              用车统计
             </span>
 
+            </div>
+            <div class='year-select-area'>
+                <input type="radio" value="2015" name="task-year-selector" onclick="og.car.onselectyear()">&nbsp;2015
+                <input type="radio" value="2014" name="task-year-selector" onclick="og.car.onselectyear()">&nbsp;2014
             </div>
         </div>
 
@@ -412,4 +417,5 @@ function getHandleOpt($status,$id)
     $('.car-number').mouseout(function () {
         $(this).siblings().addClass('hide');
     });
+    og.car&& og.car.initYear(<?php echo $year;?>);
 </script>

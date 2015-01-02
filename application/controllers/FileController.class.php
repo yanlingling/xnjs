@@ -33,11 +33,17 @@ class FileController extends ApplicationController
             return;
         }
         DB::beginWork();
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
+
         // 查询待阅读文件信息
         $sql = "SELECT DISTINCT y.id as id, x.username AS from_user,z.id as file_id,z.name as file_name, y.create_time AS file_create_time, z.create_time
 FROM  `og_users` AS x, og_file_reader AS y, og_file AS z
 WHERE to_user_id =".logged_user()->getId()."
-AND y.from_user_id = x.id AND z.id = y.file_id and z.type=1
+AND y.from_user_id = x.id AND z.id = y.file_id and z.type=1 and year(z.create_time)=$year
 AND STATUS =0";
         if (isset($_POST['condition'])) {
             $sql .= ' and (z.name like "%' . $_POST['condition'] . '%")';
@@ -49,7 +55,7 @@ AND STATUS =0";
 
         // 查询所有文件信息
         $sql = "SELECT z.id,z.name,z.create_time,sum(x.status=0) as not_read_count
-FROM og_file AS z,og_file_reader as x where x.file_id=z.id  and z.type=1";
+FROM og_file AS z,og_file_reader as x where x.file_id=z.id  and z.type=1 and year(z.create_time)=$year";
         if (isset($_POST['condition']) && $_POST['condition']!='') {
             $sql .= ' and (z.name like "%' . $_POST['condition'] . '%")';
         }
@@ -62,7 +68,7 @@ FROM og_file AS z,og_file_reader as x where x.file_id=z.id  and z.type=1";
         $sql = "SELECT DISTINCT z.id as file_id, y.id as id, x.username AS from_user,z.name as file_name, y.create_time AS file_create_time, z.create_time,y.handle_time
 FROM  `og_users` AS x, og_file_reader AS y, og_file AS z
 WHERE to_user_id =".logged_user()->getId()."
-AND y.from_user_id = x.id AND z.id = y.file_id
+AND y.from_user_id = x.id AND z.id = y.file_id and year(z.create_time)=$year
 AND STATUS =1 and z.type=1 and y.is_rehandler!=1";
         if (isset($_POST['condition']) && $_POST['condition']!='') {
             $sql .= ' and (z.name like "%' . $_POST['condition'] . '%")';
@@ -72,7 +78,7 @@ AND STATUS =1 and z.type=1 and y.is_rehandler!=1";
         tpl_assign('hasReadInfo', $rows);
 
         // 查询局发文件
-        $sql = "SELECT z.id,z.name,z.create_time FROM og_file AS z where  z.type=2";
+        $sql = "SELECT z.id,z.name,z.create_time FROM og_file AS z where  z.type=2 and year(z.create_time)=$year";
         if (isset($_POST['condition']) && $_POST['condition']!='') {
             $sql .= ' and (z.name like "%' . $_POST['condition'] . '%")';
         }

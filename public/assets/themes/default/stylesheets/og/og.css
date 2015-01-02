@@ -1685,8 +1685,8 @@ select.select_milestone, select.select_task_list, select.select_message {
 .file-search-wrap{
     text-align: right;
     position: absolute;
-    top: -6px;
-    right: 1px;
+    top: 46px;
+    right: -19px;
 }
 .duty-table tr{
     line-height: 35px;

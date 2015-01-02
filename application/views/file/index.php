@@ -1,6 +1,7 @@
 <?php
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/file/file.js');
+require_javascript("og/common.js");
 require_javascript("og/jquery.min.js");
 $genid = gen_id();
 ?>
@@ -25,10 +26,14 @@ $genid = gen_id();
         }
         $('.sub-tab span').click(function () {
             var ele = $(this);
-            og.file.currentTabId = ele.attr('id');
+            og.fileSubTab = ele.attr('id');
             showSubTab(ele);
         });
-        showSubTab($('#<?php echo $currentTabId?>'));
+        if (typeof og.fileSubTab != 'undefined') {
+            showSubTab($('#' + og.fileSubTab));
+        }
+        //showSubTab($('#<?php echo $currentTabId?>'));
+        og.file && og.file.initYear(<?php echo $year;?>);
     </script>
     <div>
         <div style="position: relative" id="file-header-wrapper">
@@ -54,6 +59,10 @@ $genid = gen_id();
              <span id='jufa-file-tab'   class="<?php echo $currentTabId == 'jufa-file-tab'? 'sub-tab-content': ''?>">
            局发文件
             </span>
+                <div class='year-select-area'>
+                    <input type="radio" value="2015" name="task-year-selector" onclick="og.file.onselectyear()">&nbsp;2015
+                    <input type="radio" value="2014" name="task-year-selector" onclick="og.file.onselectyear()">&nbsp;2014
+                </div>
             </div>
             <div class="file-search-wrap">
                 <input class='file-search-input gray' id='file-search-input' onfocus="og.file.onSearch()"

@@ -111,6 +111,19 @@ og.file.del = function (id) {
 
 
 };
+og.file.onselectyear= function () {
+    var year = og.common.getCheckboxValue('task-year-selector');
+    var url = og.getUrl('file', 'index',
+        {
+            year: year
+        });
+    og.openLink(url, {});
+};
+
+ og.file.initYear= function (year) {
+    $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+    return;
+};
 /**
  * 提交已阅
  */
@@ -143,7 +156,8 @@ og.file.onSearch = function () {
     }
 };
  og.file.beginSearch = function () {
-    var url = og.getUrl('file', 'index');
+     var year = og.common.getCheckboxValue('task-year-selector');
+    var url = og.getUrl('file', 'index', {year: year});
     og.openLink(url,
         {
             post: {
