@@ -33,9 +33,14 @@ class ReportController extends ApplicationController
             return;
         }
         DB::beginWork();
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+        tpl_assign('year', $year);
         // 查询待阅读文件信息
         $sql = "SELECT *
-FROM  og_report AS z order by z.create_time";
+FROM  og_report AS z where year(z.create_time)=$year order by z.create_time ";
         $rows = DB::executeAll($sql);
         tpl_assign('toReadInfo', $rows);
 

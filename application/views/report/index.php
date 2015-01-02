@@ -2,6 +2,7 @@
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/report/report.js');
 require_javascript("og/jquery.min.js");
+require_javascript("og/common.js");
 $genid = gen_id();
 ?>
     <script>
@@ -19,9 +20,13 @@ $genid = gen_id();
         }
         $('.sub-tab span').click(function () {
             var ele = $(this);
-            og.taskSubTab = ele.attr('id');
+            og.reportSubTab = ele.attr('id');
             showSubTab(ele);
         });
+        if (typeof og.reportSubTab != 'undefined') {
+            showSubTab($('#' + og.reportSubTab ));
+        }
+        og.report && og.report.initYear(<?php echo $year;?>);
 
     </script>
     <div>
@@ -39,6 +44,10 @@ $genid = gen_id();
             </span>
 
 
+                </div>
+                <div class='year-select-area'>
+                    <input type="radio" value="2015" name="task-year-selector" onclick="og.report.onselectyear()">&nbsp;2015
+                    <input type="radio" value="2014" name="task-year-selector" onclick="og.report.onselectyear()">&nbsp;2014
                 </div>
             </div>
 

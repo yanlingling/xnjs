@@ -8,7 +8,20 @@ og.report = og.report || {};
 og.report.addReport= function () {
     var url = og.getUrl('report', 'add_report', {type: 'text'});
     og.openLink(url, {post: {}});
-}
+};
+og.report.onselectyear= function () {
+    var year = og.common.getCheckboxValue('task-year-selector');
+    var url = og.getUrl('report', 'index',
+        {
+            year: year
+        });
+    og.openLink(url, {});
+};
+
+og.report.initYear= function (year) {
+    $('input[name="task-year-selector"][value=' + year + ']').attr('checked', true);
+    return;
+};
 og.report.submit = function (id) {
     var params = {};
     params.id = id;
