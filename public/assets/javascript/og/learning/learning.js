@@ -14,6 +14,22 @@ og.learning.addVedioLearning = function () {
     og.openLink(url, {post: {}});
 }
 
+
+ og.learning.onselectyear = function () {
+    var year = og.common.getCheckboxValue('task-year-selector');
+    var url = og.getUrl('lianzhengxuexi', 'index',
+        {
+            userid: $('#user-id').val(),
+            year: year
+        });
+    og.openLink(url, {});
+};
+
+ og.learning.initYear = function (year) {
+    $('input[name="task-year-selector"][value='+year+']').attr('checked',true);
+    return;
+};
+
 og.learning.editLearnContent = function (id) {
     var url = og.getUrl('lianzhengxuexi',
         'add_learning',

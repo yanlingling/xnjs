@@ -39,14 +39,21 @@ class LianzhengxuexiController extends ApplicationController
             tpl_assign('selfView', false);
         }
         tpl_assign('role', logged_user()->getUserRole());
+        tpl_assign('uid', $uid);
 
+        $year = '2015';
+        if (isset($_GET['year'])) {
+            $year = $_GET['year'];
+        }
+
+        tpl_assign('year', $year);
         // 查询用户当前学习情况汇总
         DB::beginWork();
 
         $sql = "SELECT `status` , COUNT( `status` ) AS light_count, z.score, canCreateLearning, y.content_id
                 FROM `og_learning` AS y, og_users AS z
                 WHERE z.id =$uid
-                AND y.user_id = z.id and y.must_learn = 1
+                AND y.user_id = z.id and y.must_learn = 1 and year(y.due_date) = $year
                 GROUP BY STATUS
                 ORDER BY STATUS ASC ";
         $rows = DB::executeAll($sql);
@@ -69,7 +76,7 @@ class LianzhengxuexiController extends ApplicationController
             WHERE z.id =" . $uid . "
             AND y.user_id =z.id
             AND x.id = y.content_id
-            and y.must_learn = 1
+            and y.must_learn = 1 and year(y.due_date) = $year
             order by y.status DESC,y.due_date ASC";
 
         $rows = DB::executeAll($sql);
@@ -86,7 +93,7 @@ class LianzhengxuexiController extends ApplicationController
             WHERE z.id =" . $uid . "
             AND y.user_id =z.id
             AND x.id = y.content_id
-            and y.must_learn = 0
+            and y.must_learn = 0 and year(y.due_date) = $year
             order by y.status DESC,y.due_date ASC";
 
         $rows = DB::executeAll($sql);
@@ -104,7 +111,7 @@ class LianzhengxuexiController extends ApplicationController
             FROM  `og_learning_content` AS x,  `og_learning` AS y, og_users AS z
             WHERE y.user_id =z.id
             AND x.id = y.content_id
-            and y.supervise_status!=0
+            and y.supervise_status!=0 and year(y.due_date) = $year
             order by y.supervise_status DESC,y.due_date ASC";
 
             $rows = DB::executeAll($sql);
@@ -112,7 +119,7 @@ class LianzhengxuexiController extends ApplicationController
             tpl_assign('supervise_list', $rows);
             // 查学习内容数据，是学习内容本身
             $sql = "SELECT *
-            FROM  `og_learning_content` AS x
+            FROM  `og_learning_content` AS x where year(x.due_date) = $year
 
             order by x.due_date ASC";
 

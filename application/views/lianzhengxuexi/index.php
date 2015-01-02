@@ -1,11 +1,13 @@
 <?php
 require_javascript('og/modules/addMessageForm.js');
 require_javascript('og/learning/learning.js');
+require_javascript("og/common.js");
 require_javascript("og/jquery.min.js");
 $genid = gen_id();
 
 ?>
 <div>
+    <input id="user-id" type="hidden" value="<?php echo $uid ;?>"/>
     <div class="sub-tab">
         <span id='my-learning-tab'
               class="<?php echo $tab == 'apply' ? '' : 'sub-tab-content'; ?>"><?php //echo $departName; ?>
@@ -19,6 +21,10 @@ $genid = gen_id();
         echo $tab == 'apply' ? 'sub-tab-content' : '';
         echo ($canCreateLearning == 1 && $selfView) ? '' : 'hide'; ?>">
             学习内容</span>
+        <div class='year-select-area'>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.learning.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.learning.onselectyear()">&nbsp;2014
+        </div>
     </div>
 
 
@@ -384,6 +390,10 @@ function getOptionalLearningOptContent($learningId, $contentId)
     }
     renderBulletin();
 
+    // 用户点击过tab的切换，按用户点击的来
+    if (typeof og.learningSubTab != 'undefined') {
+        showSubTab($('#' + og.learningSubTab ));
+    }
     function showSubTab(ele) {
         $('.sub-tab span').removeClass('sub-tab-content');
         ele.addClass('sub-tab-content');
@@ -406,7 +416,8 @@ function getOptionalLearningOptContent($learningId, $contentId)
     }
     $('.sub-tab span').click(function () {
         var ele = $(this);
-        og.taskSubTab = ele.attr('id');
+        og.learningSubTab = ele.attr('id');
         showSubTab(ele);
     });
+    og.learning&& og.learning.initYear(<?php echo $year;?>);
 </script>
