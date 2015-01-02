@@ -74,6 +74,7 @@ require_javascript("og/jquery.min.js");
     og.index.openTask = function () {
         og.index.openTaskModule();
         Ext.getCmp('tabs-panel').setActiveTab('tasks-panel');
+        //og.panels.tasks.load({type: 'url', data:og.getUrl('newtask', 'new_list_tasks',{'tab': 'comment'})}, true);
     }
     og.index.openLianzheng = function () {
         og.index.openLianzhengModule();
@@ -324,7 +325,7 @@ require_javascript("og/jquery.min.js");
                  og.index.openTask();
                  break;
              case 'car':
-                 url = og.getUrl('carmanage', 'index');
+                 url = og.getUrl('carmanage', 'index',{'tab': 'handle'});
                  og.index.openCar();
                  break;
              case 'qingxiaojia':
@@ -352,7 +353,7 @@ require_javascript("og/jquery.min.js");
                  og.index.openZhibanzhang();
                  break;
          }
-        og.openLink(url, {});
+        //og.openLink(url, {});
     }
 
 
