@@ -400,10 +400,14 @@ function getHandleOpt($status, $isHandled, $id,$start,$end,$uid,$approveBegin,$a
     }
     $('.sub-tab span').click(function () {
         var ele = $(this);
-        og.taskSubTab = ele.attr('id');
+        og.qiangxiaojiaSubTab = ele.attr('id');
         showSubTab(ele);
     });
-	
+
+    // 用户点击过tab的切换，按用户点击的来
+    if (typeof og.qiangxiaojiaSubTab != 'undefined') {
+        showSubTab($('#' + og.qiangxiaojiaSubTab ));
+    }
 	$(function(){
 		$('.approveInfo').mouseover(function(){
 			if($(this).html() != '-'){

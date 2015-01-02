@@ -38,6 +38,10 @@ foreach ($departInfo as $item) {
         echo $has_comment_auth ? '' : 'hide';
         echo $tab == 'comment' ? 'sub-tab-content' : '';
         ?>">待评价岗位职责</span>
+        <div class='year-select-area'>
+            <input type="radio" value="2015" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2015
+            <input type="radio" value="2014" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2014
+        </div>
     </div>
 
     <div class="clearFloat"></div>
@@ -79,10 +83,6 @@ foreach ($departInfo as $item) {
     <div style="position: relative;height: 40px;">
         <span class="new-button" id='add-task' onclick="og.taskList.addTaskClick()">新建岗位职责</span>
         <span class="new-button" id='view-all-task' onclick="og.taskList.viewAllTaskClick()">查看全局任务</span>
-        <div style="right: 10px; position: absolute; top: 12px;">
-            <input type="radio" value="2015" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2015
-            <input type="radio" value="2014" name="task-year-selector" onclick="og.taskList.onselectyear()">&nbsp;2014
-        </div>
     </div>
     <div class="table-header">
         <table width='100%'>

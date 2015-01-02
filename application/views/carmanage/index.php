@@ -25,10 +25,13 @@ $genid = gen_id();
     }
     $('.sub-tab span').click(function () {
         var ele = $(this);
-        og.taskSubTab = ele.attr('id');
+        og.carSubTab = ele.attr('id');
         showSubTab(ele);
     });
 
+    if (typeof og.carSubTab != 'undefined') {
+        showSubTab($('#' + og.carSubTab));
+    }
 </script>
 <div>
     <div>

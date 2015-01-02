@@ -318,18 +318,21 @@ require_javascript("og/jquery.min.js");
                  break;
              case 'comment':
                  if (og.loggedUser.userRole == '科长') {
-                     url = og.getUrl('newtask', 'new_list_tasks',{'tab': 'comment'});
+                     url = og.getUrl('newtask', 'new_list_tasks');
                  } else {
                      url = og.getUrl('newtask', 'new_list_tasks_of_juzhang');
                  }
+                 og.taskSubTab = 'comment-sub-link' ;
                  og.index.openTask();
                  break;
              case 'car':
-                 url = og.getUrl('carmanage', 'index',{'tab': 'handle'});
+                 url = og.getUrl('carmanage', 'index');
+                 og.carSubTab ='to-handle-tab';
                  og.index.openCar();
                  break;
              case 'qingxiaojia':
                  url =  og.getUrl('qingxiaojia', 'index',{'tab': 'handle'});;
+                 og.qiangxiaojiaSubTab = 'to-handle-tab';
                  og.index.openQingxiaojia();
               break;
              case 'taskDelay':

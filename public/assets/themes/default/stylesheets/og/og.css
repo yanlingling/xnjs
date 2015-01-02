@@ -1983,3 +1983,8 @@ width: 50px;
 .dash-list .item  .app-icon-dianzixiaoneng {
     background: transparent url(../../images/index.png) no-repeat scroll -0px -334px !important;
 }
+.year-select-area {
+    right: 10px;
+    position: absolute;
+    top: 12px;
+}

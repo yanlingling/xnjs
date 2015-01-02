@@ -135,7 +135,7 @@ AND x.depart_id = y.depart_id ";
         $sql = "SELECT y.depart_name AS name,  `light_status` , COUNT(  `light_status` ) AS light_count, y.score,
             y.xiaoneng_score
             FROM  `og_project_tasks` AS x,  `og_department` AS y
-            WHERE  `assigned_to_departid` =$depart_id AND y.depart_id =$depart_id  and x.deleted = !1
+            WHERE  `assigned_to_departid` =$depart_id AND y.depart_id =$depart_id  and x.deleted = !1 and year(due_date)=$year
             GROUP BY light_status
             ORDER BY light_status ASC";
         $rows = DB::executeAll($sql);
