@@ -20,6 +20,7 @@ foreach ($departInfo as $item) {
 }
 ?>
 <div id="task-list-main">
+
 <input id="depart-id" type="hidden" value="<?php echo $departId ;?>"/>
 <span id="depart_name" class="hide"><?php echo $departName ?></span>
 <span id="task_sub_tab" class="hide"><?php echo $tab ?></span>
@@ -773,10 +774,11 @@ function getCommentOptContent($task_id,$text)
 <script>
     function renderBulletin() {
         eval('var departOverviewData=<?php echo $task_overview_data?>');
+        departOverviewData = departOverviewData || [];
         var redLightCount = 0;
         var yellowLightCount = 0;
-        var baseScore = departOverviewData[0].score || 100;
-        var xiaonengScore = departOverviewData[0].xiaoneng_score || '100';
+        var baseScore = (departOverviewData[0] && departOverviewData[0].score) || 100;
+        var xiaonengScore = (departOverviewData[0] && departOverviewData[0].xiaoneng_score) || '100';
         for (var i = 0, item; item = departOverviewData[i++];) {
             var status = item['light_status'];
             if (status == '4') {

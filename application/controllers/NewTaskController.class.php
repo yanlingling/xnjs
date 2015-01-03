@@ -168,7 +168,7 @@ AND x.depart_id = y.depart_id ";
             FROM " . TABLE_PREFIX . "project_task_delay_apply AS x, " . TABLE_PREFIX . "project_tasks AS y, " . TABLE_PREFIX . "users AS z
             WHERE x.task_id = y.id
             AND z.id  = x.user_id
-            AND x.depart_id =$depart_id  and y.deleted = !1 and year(due_date)=$year
+            AND x.depart_id =$depart_id  and y.deleted = !1 and year(x.create_time)=$year
             order by x.create_time DESC,x.status ASC
             ";
         $rows = DB::executeAll($sql);
